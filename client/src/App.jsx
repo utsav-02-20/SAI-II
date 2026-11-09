@@ -5,7 +5,8 @@ import FeatureGrid from './components/FeatureGrid.jsx';
 import AuthModal from './components/auth/AuthModal.jsx';
 import ProfileCard from './components/patient/ProfileCard.jsx';
 import EmergencyAlertModal from './components/triage/EmergencyAlertModal.jsx';
-import { ShieldCheck, Heart, Sparkles, Terminal, AlertTriangle, Send } from 'lucide-react';
+import MedicineAnalyzer from './components/medicines/MedicineAnalyzer.jsx';
+import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState('en');
@@ -96,13 +97,13 @@ export default function App() {
         onSignOut={handleSignOut}
       />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 sm:p-12 shadow-xl shadow-emerald-950/10 mb-8">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 sm:p-12 shadow-xl shadow-emerald-950/10">
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Phase 1 Initialized • Auth & Emergency Interceptor Live</span>
+              <span>Phase 2 Initialized • Verified Medicine Intelligence Live</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
               {language === 'en'
@@ -111,19 +112,19 @@ export default function App() {
             </h1>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
               {language === 'en'
-                ? 'Real-time emergency triage guardrail, digital patient profile baseline with drug allergy tracking, and unified clinical intelligence.'
-                : 'रीयल-टाइम आपातकालीन सुरक्षा, दवा एलर्जी ट्रैकिंग के साथ डिजिटल रोगी प्रोफ़ाइल और एकीकृत स्वास्थ्य एआई।'}
+                ? 'Check drug interactions, duplicate active ingredients, patient allergy contraindications, and food warnings grounded in OpenFDA & RxNorm.'
+                : 'दवाओं की परस्पर क्रिया, डुप्लीकेट ओवरडोज़ और भोजन चेतावनियों की प्रमाणित जांच।'}
             </p>
 
             {/* Quick Status Bar */}
             <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium">
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>JWT RBAC Auth Active</span>
+                <Pill className="w-4 h-4 text-emerald-400" />
+                <span>OpenFDA & RxNorm Active</span>
               </div>
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <AlertTriangle className="w-4 h-4 text-red-400" />
-                <span>Emergency Red-Flag Guardrail Online</span>
+                <span>Emergency Red-Flag Interceptor Online</span>
               </div>
             </div>
           </div>
@@ -132,7 +133,7 @@ export default function App() {
         </div>
 
         {/* Phase 1: Interactive Emergency Red-Flag Triage Simulator */}
-        <div className="mb-8 p-6 bg-white rounded-3xl border border-red-200 shadow-sm">
+        <div className="p-6 bg-white rounded-3xl border border-red-200 shadow-sm">
           <div className="flex items-center space-x-2 text-red-600 font-bold text-sm mb-2">
             <AlertTriangle className="w-4 h-4" />
             <span>
@@ -169,16 +170,17 @@ export default function App() {
           </form>
         </div>
 
+        {/* Phase 2: Medicine Intelligence & Drug Safety Engine */}
+        <MedicineAnalyzer user={user} language={language} />
+
         {/* Authenticated Patient Medical Profile Baseline */}
         {user ? (
-          <div className="mb-8">
-            <ProfileCard
-              user={user}
-              onProfileUpdated={(updated) => setUser({ ...user, profile: updated })}
-            />
-          </div>
+          <ProfileCard
+            user={user}
+            onProfileUpdated={(updated) => setUser({ ...user, profile: updated })}
+          />
         ) : (
-          <div className="mb-8 p-6 bg-emerald-50 border border-emerald-200 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <h3 className="text-base font-bold text-emerald-900">
                 {language === 'en' ? 'Manage Your Clinical Baseline' : 'अपनी स्वास्थ्य प्रोफ़ाइल प्रबंधित करें'}

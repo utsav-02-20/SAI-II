@@ -1,0 +1,50 @@
+[
+  {
+    "brand": "Dolo 650",
+    "generic": "Paracetamol",
+    "therapeuticClass": "Analgesic & Antipyretic",
+    "strengthMg": 650,
+    "rxcui": "161",
+    "duplicateRiskWith": ["Combiflam", "Calpol 500", "Crocin"]
+  },
+  {
+    "brand": "Combiflam",
+    "generic": "Ibuprofen + Paracetamol",
+    "therapeuticClass": "NSAID + Analgesic Combination",
+    "strengthMg": 725,
+    "rxcui": "5640",
+    "duplicateRiskWith": ["Dolo 650", "Brufen"]
+  },
+  {
+    "brand": "Aspirin",
+    "generic": "Acetylsalicylic Acid",
+    "therapeuticClass": "Antiplatelet & NSAID",
+    "strengthMg": 75,
+    "rxcui": "1191",
+    "majorInteractions": ["Warfarin", "Heparin", "Ibuprofen"]
+  },
+  {
+    "brand": "Warfarin",
+    "generic": "Warfarin Sodium",
+    "therapeuticClass": "Anticoagulant",
+    "strengthMg": 5,
+    "rxcui": "11289",
+    "majorInteractions": ["Aspirin", "Ibuprofen", "Ginkgo Biloba"]
+  },
+  {
+    "brand": "Atorvastatin",
+    "generic": "Atorvastatin Calcium",
+    "therapeuticClass": "Statin (Lipid-lowering)",
+    "strengthMg": 20,
+    "rxcui": "83367",
+    "foodWarning": "Avoid Grapefruit juice (CYP3A4 inhibition)"
+  },
+  {
+    "brand": "Augmentin 625",
+    "generic": "Amoxicillin + Clavulanic Acid",
+    "therapeuticClass": "Penicillin Antibiotic",
+    "strengthMg": 625,
+    "rxcui": "617311",
+    "contraindicationAllergy": "Penicillin"
+  }
+]

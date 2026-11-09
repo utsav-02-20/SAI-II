@@ -7,6 +7,7 @@ import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import patientRoutes from './routes/patient.routes.js';
 import emergencyRoutes from './routes/emergency.routes.js';
+import medicineRoutes from './routes/medicine.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/patient', patientRoutes);
 app.use('/api/emergency', emergencyRoutes);
+app.use('/api/medicines', medicineRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -36,6 +38,7 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       patient: '/api/patient',
       emergency: '/api/emergency',
+      medicines: '/api/medicines',
     },
   });
 });
