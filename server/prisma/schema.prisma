@@ -1,0 +1,294 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// -------------------------------------------------------------
+// USER & PATIENT PROFILES
+// -------------------------------------------------------------
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  email         String         @unique
+  passwordHash  String
+  phone         String?
+  role          Role           @default(PATIENT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  patientProfile PatientProfile?
+  doctorProfile  DoctorProfile?
+  refreshTokens  RefreshToken[]
+}
+
+model PatientProfile {
+  id               String                 @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String                 @unique @db.ObjectId
+  user             User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  firstName        String
+  lastName         String
+  dateOfBirth      DateTime
+  gender           Gender
+  bloodGroup       String?
+  heightCm         Float?
+  weightKg         Float?
+  
+  // Clinical Baseline
+  allergies        String[]               @default([])
+  chronicConditions String[]              @default([])
+  familyHistory    FamilyDiseaseHistory[]
+  emergencyContacts EmergencyContact[]
+
+  // Clinical Records
+  labReports       LabReport[]
+  prescriptions    Prescription[]
+  adherenceLogs    MedicationAdherenceLog[]
+  riskAssessments  RiskAssessment[]
+  healthAgeLogs    HealthAgeLog[]
+  symptomSessions  SymptomChatSession[]
+  appointments     Appointment[]
+
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+}
+
+type FamilyDiseaseHistory {
+  relation         String
+  disease          String
+}
+
+type EmergencyContact {
+  name             String
+  relationship     String
+  phoneNumber      String
+}
+
+model DoctorProfile {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String            @unique @db.ObjectId
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fullName         String
+  specialty        String
+  medicalLicenseNo String            @unique
+  experienceYears  Int
+  consultationFee  Float
+  isAvailable      Boolean           @default(true)
+  
+  appointments     Appointment[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+// -------------------------------------------------------------
+// HEALTH REPORT & BIOMARKER ANALYZER
+// -------------------------------------------------------------
+
+enum ReportStatus {
+  PENDING
+  PROCESSING
+  ANALYZED
+  FAILED
+}
+
+model LabReport {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  patientId       String            @db.ObjectId
+  patient         PatientProfile    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  reportTitle     String
+  reportDate      DateTime
+  reportType      String            // "CBC", "LIPID", "DIABETES", "GENERAL"
+  fileUrl         String            // Cloudinary signed URL
+  cloudinaryId    String
+  status          ReportStatus      @default(PENDING)
+  
+  biomarkers      BiomarkerEntry[]
+  aiSummary       String?
+  abnormalCount   Int               @default(0)
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+type BiomarkerEntry {
+  name            String            // e.g. "Hemoglobin"
+  value           Float
+  unit            String            // "g/dL"
+  normalMin       Float
+  normalMax       Float
+  status          String            // "LOW", "NORMAL", "HIGH", "CRITICAL"
+  explanation     String
+}
+
+// -------------------------------------------------------------
+// MEDICATIONS & ADHERENCE
+// -------------------------------------------------------------
+
+model Prescription {
+  id              String               @id @default(auto()) @map("_id") @db.ObjectId
+  patientId       String               @db.ObjectId
+  patient         PatientProfile       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  prescribedBy    String?
+  diagnosis       String?
+  startDate       DateTime
+  endDate         DateTime?
+  isActive        Boolean              @default(true)
+
+  medicines       PrescribedMedicine[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+}
+
+type PrescribedMedicine {
+  brandName       String
+  genericName     String
+  dosage          String
+  frequency       String
+  timings         String[]
+  instructions    String
+  durationDays    Int
+}
+
+model MedicationAdherenceLog {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  patientId       String            @db.ObjectId
+  patient         PatientProfile    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  medicineName    String
+  scheduledTime   DateTime
+  takenTime       DateTime?
+  status          String            // "TAKEN", "MISSED", "SKIPPED"
+  streakCount     Int               @default(0)
+
+  createdAt       DateTime          @default(now())
+}
+
+// -------------------------------------------------------------
+// ADAPTIVE TRIAGE & SYMPTOM SESSIONS
+// -------------------------------------------------------------
+
+model SymptomChatSession {
+  id                    String            @id @default(auto()) @map("_id") @db.ObjectId
+  patientId             String            @db.ObjectId
+  patient               PatientProfile    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  title                 String
+  chiefComplaint        String
+  isClosed              Boolean           @default(false)
+  redFlagTriggered      Boolean           @default(false)
+  
+  differentialDiagnosis String[]
+  recommendedSpecialty  String?
+  
+  messages              ChatMessage[]
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+}
+
+type ChatMessage {
+  sender          String            // "USER", "AI_ASSISTANT", "DOCTOR"
+  content         String
+  audioUrl        String?
+  imageUrl        String?
+  citations       CitationMeta[]
+  timestamp       DateTime          @default(now())
+}
+
+type CitationMeta {
+  sourceTitle     String
+  url             String
+  snippet         String
+}
+
+// -------------------------------------------------------------
+// ML ASSESSMENTS & LONGEVITY METRICS
+// -------------------------------------------------------------
+
+model RiskAssessment {
+  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
+  patientId           String         @db.ObjectId
+  patient             PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  diabetesRiskPercent Float
+  heartDiseasePercent Float
+  hypertensionPercent Float
+  
+  contributingFactors String[]
+  preventionPlan      PreventionPlan
+  
+  createdAt           DateTime       @default(now())
+}
+
+type PreventionPlan {
+  dietaryPlan          String[]
+  exercisePlan         String[]
+  sleepRecommendations String
+  dailyWaterIntakeLiters Float
+}
+
+model HealthAgeLog {
+  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
+  patientId           String         @db.ObjectId
+  patient             PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  chronologicalAge    Int
+  calculatedHealthAge Int
+  agePenaltyReasons   String[]
+  longevityTips       String[]
+  
+  createdAt           DateTime       @default(now())
+}
+
+// -------------------------------------------------------------
+// APPOINTMENTS
+// -------------------------------------------------------------
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model Appointment {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  patientId       String            @db.ObjectId
+  patient         PatientProfile    @relation(fields: [patientId], references: [id])
+  doctorId        String            @db.ObjectId
+  doctor          DoctorProfile     @relation(fields: [doctorId], references: [id])
+  
+  scheduledAt     DateTime
+  status          AppointmentStatus @default(SCHEDULED)
+  clinicalSummary String?
+  meetingRoomId   String?
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model RefreshToken {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  token           String            @unique
+  userId          String            @db.ObjectId
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt       DateTime
+  createdAt       DateTime          @default(now())
+}

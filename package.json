@@ -1,0 +1,25 @@
+{
+  "name": "arogya-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Next-Gen AI Healthcare & Telemedicine Platform",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev:ai": "python ai-service/app/main.py",
+    "seed": "python seed/seed_database.py",
+    "test:py": "pytest tests/ -v"
+  },
+  "keywords": [
+    "healthcare",
+    "ai",
+    "telemedicine",
+    "express",
+    "mongodb",
+    "prisma",
+    "react",
+    "fastapi"
+  ],
+  "author": "ArogyaAI Engineering Team",
+  "license": "UNLICENSED"
+}
