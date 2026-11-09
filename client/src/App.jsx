@@ -2,44 +2,107 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from './components/Header.jsx';
 import FeatureGrid from './components/FeatureGrid.jsx';
-import { ShieldCheck, Heart, Sparkles, Terminal } from 'lucide-react';
+import AuthModal from './components/auth/AuthModal.jsx';
+import ProfileCard from './components/patient/ProfileCard.jsx';
+import EmergencyAlertModal from './components/triage/EmergencyAlertModal.jsx';
+import { ShieldCheck, Heart, Sparkles, Terminal, AlertTriangle, Send } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState('en');
   const [apiData, setApiData] = useState(null);
   const [apiStatus, setApiStatus] = useState('connecting');
+  const [user, setUser] = useState(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  // Emergency scanner state
+  const [symptomInput, setSymptomInput] = useState('');
+  const [checkingEmergency, setCheckingEmergency] = useState(false);
+  const [emergencyResult, setEmergencyResult] = useState(null);
+  const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
 
   useEffect(() => {
-    // Check Express API health check endpoint
+    // 1. Health check
     axios
       .get('/api/health')
       .then((res) => {
         setApiData(res.data);
         setApiStatus('online');
       })
-      .catch((err) => {
-        console.warn('API connection check failed, retrying directly on 5000:', err.message);
-        axios
-          .get('http://localhost:5000/api/health')
-          .then((res) => {
-            setApiData(res.data);
-            setApiStatus('online');
-          })
-          .catch(() => setApiStatus('offline'));
-      });
+      .catch(() => setApiStatus('offline'));
+
+    // 2. Check stored JWT token
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      axios
+        .get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+        .then((res) => {
+          if (res.data.success) {
+            setUser(res.data.data.user);
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+        });
+    }
   }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    setUser(null);
+  };
+
+  const handleCheckEmergency = async (e) => {
+    e?.preventDefault();
+    if (!symptomInput.trim()) return;
+
+    setCheckingEmergency(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const res = await axios.post(
+        '/api/emergency/check',
+        { message: symptomInput },
+        { headers }
+      );
+
+      if (res.data.isEmergency) {
+        setEmergencyResult(res.data);
+        setIsEmergencyModalOpen(true);
+      } else {
+        alert(
+          language === 'en'
+            ? '✓ No acute life-threatening red flags detected in this symptom query.'
+            : '✓ इस लक्षण प्रश्न में कोई तीव्र जानलेवा आपातकालीन संकेत नहीं पाया गया।'
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCheckingEmergency(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100/50 to-slate-50 flex flex-col">
-      <Header language={language} setLanguage={setLanguage} apiStatus={apiStatus} />
+      <Header
+        language={language}
+        setLanguage={setLanguage}
+        apiStatus={apiStatus}
+        user={user}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onSignOut={handleSignOut}
+      />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 sm:p-12 shadow-xl shadow-emerald-950/10 mb-10">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 sm:p-12 shadow-xl shadow-emerald-950/10 mb-8">
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Phase 0 Initialized • Clean JavaScript Architecture</span>
+              <span>Phase 1 Initialized • Auth & Emergency Interceptor Live</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
               {language === 'en'
@@ -48,47 +111,111 @@ export default function App() {
             </h1>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
               {language === 'en'
-                ? 'Personalized medicine safety checks, lab report OCR, dynamic differential diagnosis, and evidence-grounded medical guidance.'
-                : 'दवा सुरक्षा जांच, लैब रिपोर्ट विश्लेषण, सटीक रोग जोखिम भविष्यवाणी और प्रमाणित स्वास्थ्य मार्गदर्शन।'}
+                ? 'Real-time emergency triage guardrail, digital patient profile baseline with drug allergy tracking, and unified clinical intelligence.'
+                : 'रीयल-टाइम आपातकालीन सुरक्षा, दवा एलर्जी ट्रैकिंग के साथ डिजिटल रोगी प्रोफ़ाइल और एकीकृत स्वास्थ्य एआई।'}
             </p>
 
             {/* Quick Status Bar */}
-            <div className="mt-8 flex flex-wrap gap-4 text-xs font-medium">
-              <div className="flex items-center space-x-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
+            <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium">
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Express + MongoDB Prisma Ready</span>
+                <span>JWT RBAC Auth Active</span>
               </div>
-              <div className="flex items-center space-x-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
-                <Terminal className="w-4 h-4 text-teal-400" />
-                <span>Python Test & Seed Harness Active</span>
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+                <span>Emergency Red-Flag Guardrail Online</span>
               </div>
             </div>
           </div>
 
-          {/* Decorative background glow */}
           <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
         </div>
 
-        {/* Live Express API Connection Banner */}
-        {apiData && (
-          <div className="mb-8 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-sm text-emerald-800">
-            <div className="flex items-center space-x-2">
-              <span className="w-2.5 h-2.5 bg-emerald-600 rounded-full animate-ping" />
-              <span className="font-semibold">Backend Live:</span>
-              <span>{apiData.service}</span>
-              <span className="text-xs bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md font-mono">
-                {apiData.runtime}
-              </span>
-            </div>
-            <span className="text-xs text-emerald-600 font-mono hidden sm:inline">
-              Uptime: {apiData.uptimeSeconds}s
+        {/* Phase 1: Interactive Emergency Red-Flag Triage Simulator */}
+        <div className="mb-8 p-6 bg-white rounded-3xl border border-red-200 shadow-sm">
+          <div className="flex items-center space-x-2 text-red-600 font-bold text-sm mb-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>
+              {language === 'en'
+                ? 'Real-Time Emergency Red-Flag Diagnostic Scanner'
+                : 'रीयल-टाइम आपातकालीन रेड-फ्लैग स्कैनर'}
             </span>
+          </div>
+          <p className="text-xs text-slate-500 mb-4">
+            {language === 'en'
+              ? 'Tests acute coronary syndrome, stroke FAST criteria, anaphylaxis, or psychiatric crisis. Instant heuristic scan with zero chatbot delay.'
+              : 'दिल का दौरा, स्ट्रोक या गंभीर एलर्जी के लक्षणों की तुरंत पहचान करता है।'}
+          </p>
+          <form onSubmit={handleCheckEmergency} className="flex gap-2">
+            <input
+              type="text"
+              value={symptomInput}
+              onChange={(e) => setSymptomInput(e.target.value)}
+              placeholder={
+                language === 'en'
+                  ? 'Try: "crushing chest pain radiating to left arm" or "facial droop and slurred speech"'
+                  : 'उदाहरण: "crushing chest pain radiating to left arm"'
+              }
+              className="flex-1 text-xs sm:text-sm px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+            <button
+              type="submit"
+              disabled={checkingEmergency || !symptomInput.trim()}
+              className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs sm:text-sm flex items-center space-x-1.5 transition disabled:opacity-50"
+            >
+              <span>{checkingEmergency ? 'Scanning...' : 'Test Red Flag'}</span>
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </form>
+        </div>
+
+        {/* Authenticated Patient Medical Profile Baseline */}
+        {user ? (
+          <div className="mb-8">
+            <ProfileCard
+              user={user}
+              onProfileUpdated={(updated) => setUser({ ...user, profile: updated })}
+            />
+          </div>
+        ) : (
+          <div className="mb-8 p-6 bg-emerald-50 border border-emerald-200 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base font-bold text-emerald-900">
+                {language === 'en' ? 'Manage Your Clinical Baseline' : 'अपनी स्वास्थ्य प्रोफ़ाइल प्रबंधित करें'}
+              </h3>
+              <p className="text-xs text-emerald-700 mt-0.5">
+                {language === 'en'
+                  ? 'Sign in to record your known drug allergies, chronic conditions, and emergency contacts.'
+                  : 'दवा एलर्जी और आपातकालीन संपर्क रिकॉर्ड करने के लिए साइन इन करें।'}
+              </p>
+            </div>
+            <button
+              onClick={() => setIsAuthOpen(true)}
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition whitespace-nowrap shadow-sm shadow-emerald-600/20"
+            >
+              {language === 'en' ? 'Sign In / Register' : 'साइन इन करें'}
+            </button>
           </div>
         )}
 
-        {/* Feature Matrix */}
+        {/* Feature Grid */}
         <FeatureGrid language={language} />
       </main>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onAuthSuccess={(authUser) => setUser(authUser)}
+      />
+
+      {/* Emergency Alert Modal */}
+      <EmergencyAlertModal
+        isOpen={isEmergencyModalOpen}
+        onClose={() => setIsEmergencyModalOpen(false)}
+        emergencyData={emergencyResult}
+        language={language}
+      />
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-6">

@@ -24,10 +24,12 @@ def manage_servers():
     express_proc = None
     ai_proc = None
 
-    # Check if Express is already running
+    # Check if Express is responsive and running the current API
+    express_running = False
     try:
         r = httpx.get(f"{EXPRESS_BASE_URL}/api/health", timeout=1.0)
-        express_running = r.status_code == 200
+        if r.status_code == 200:
+            express_running = True
     except Exception:
         express_running = False
 
@@ -35,12 +37,9 @@ def manage_servers():
         server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "server"))
         express_proc = subprocess.Popen(
             ["node", "src/server.js"],
-            cwd=server_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            cwd=server_dir
         )
-        # Wait for Express to bind port
-        for _ in range(25):
+        for _ in range(30):
             try:
                 r = httpx.get(f"{EXPRESS_BASE_URL}/api/health", timeout=0.5)
                 if r.status_code == 200:
@@ -48,10 +47,12 @@ def manage_servers():
             except Exception:
                 time.sleep(0.2)
 
-    # Check if Python AI service is already running
+    # Check if Python AI service is running
+    ai_running = False
     try:
         r = httpx.get(f"{AI_SERVICE_BASE_URL}/health", timeout=1.0)
-        ai_running = r.status_code == 200
+        if r.status_code == 200:
+            ai_running = True
     except Exception:
         ai_running = False
 
@@ -59,12 +60,9 @@ def manage_servers():
         ai_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ai-service"))
         ai_proc = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", str(AI_SERVICE_PORT)],
-            cwd=ai_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            cwd=ai_dir
         )
-        # Wait for FastAPI to bind port
-        for _ in range(25):
+        for _ in range(30):
             try:
                 r = httpx.get(f"{AI_SERVICE_BASE_URL}/health", timeout=0.5)
                 if r.status_code == 200:
@@ -74,7 +72,7 @@ def manage_servers():
 
     yield
 
-    # Teardown processes if spawned by this fixture
+    # Teardown processes
     if express_proc:
         express_proc.terminate()
         try:

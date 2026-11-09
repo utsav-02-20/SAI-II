@@ -4,6 +4,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { env } from './config/env.js';
 import healthRoutes from './routes/health.routes.js';
+import authRoutes from './routes/auth.routes.js';
+import patientRoutes from './routes/patient.routes.js';
+import emergencyRoutes from './routes/emergency.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -20,12 +23,20 @@ if (env.NODE_ENV === 'development') {
 
 // API Routes
 app.use('/api', healthRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/patient', patientRoutes);
+app.use('/api/emergency', emergencyRoutes);
 
 // Root route
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to ArogyaAI Clinical Healthcare API',
-    documentation: '/api/health',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      patient: '/api/patient',
+      emergency: '/api/emergency',
+    },
   });
 });
 
