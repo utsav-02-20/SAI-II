@@ -11,6 +11,7 @@ import medicineRoutes from './routes/medicine.routes.js';
 import reportRoutes from './routes/report.routes.js';
 import triageRoutes from './routes/triage.routes.js';
 import knowledgeRoutes from './routes/knowledge.routes.js';
+import riskRoutes from './routes/risk.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/medicines', medicineRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/triage', triageRoutes);
 app.use('/api/knowledge', knowledgeRoutes);
+app.use('/api/risk', riskRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -48,6 +50,7 @@ app.get('/', (req, res) => {
       reports: '/api/reports',
       triage: '/api/triage',
       knowledge: '/api/knowledge',
+      risk: '/api/risk',
     },
   });
 });

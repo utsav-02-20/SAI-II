@@ -9,7 +9,8 @@ import AdaptiveTriage from './components/triage/AdaptiveTriage.jsx';
 import MedicineAnalyzer from './components/medicines/MedicineAnalyzer.jsx';
 import LabReportAnalyzer from './components/reports/LabReportAnalyzer.jsx';
 import ClinicalAssistant from './components/knowledge/ClinicalAssistant.jsx';
-import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText, Stethoscope, BookOpen } from 'lucide-react';
+import RiskCalculator from './components/risk/RiskCalculator.jsx';
+import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText, Stethoscope, BookOpen, Activity } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState('en');
@@ -106,7 +107,7 @@ export default function App() {
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Phase 5 Initialized • Grounded RAG, Myths & Nutrition Live</span>
+              <span>Phase 6 Active • ML Disease Risk, Biological Health Age & Prevention Roadmap</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
               {language === 'en'
@@ -115,12 +116,16 @@ export default function App() {
             </h1>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
               {language === 'en'
-                ? 'Zero-hallucination WHO/CDC citations, viral medical myth buster, micronutrient deficiency screening, adaptive triage, and lab OCR.'
-                : 'विश्व स्वास्थ्य संगठन प्रमाणित उत्तर, मेडिकल मिथक जांच, विटामिन कमी पहचान और अनुकूली डॉक्टर साक्षात्कार।'}
+                ? 'Cardiovascular & Diabetes 10-yr ML risk models, biological health age calculator, WHO/CDC RAG assistant, adaptive triage, and lab OCR.'
+                : 'हृदय व मधुमेह जोखिम भविष्यवाणियां, जैविक स्वास्थ्य आयु, विश्व स्वास्थ्य संगठन प्रमाणित उत्तर और डॉक्टर साक्षात्कार।'}
             </p>
 
             {/* Quick Status Bar */}
             <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium">
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+                <Activity className="w-4 h-4 text-emerald-400" />
+                <span>ML Disease Risk & Health Age</span>
+              </div>
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <BookOpen className="w-4 h-4 text-blue-400" />
                 <span>WHO & CDC Grounded RAG</span>
@@ -176,6 +181,9 @@ export default function App() {
             </button>
           </form>
         </div>
+
+        {/* Phase 6: Disease Risk Score (ML), Biological Health Age & Prevention Roadmap */}
+        <RiskCalculator language={language} />
 
         {/* Phase 5: Clinical Assistant (RAG, Myth Buster & Nutrition) */}
         <ClinicalAssistant language={language} />
