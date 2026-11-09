@@ -9,6 +9,7 @@ import patientRoutes from './routes/patient.routes.js';
 import emergencyRoutes from './routes/emergency.routes.js';
 import medicineRoutes from './routes/medicine.routes.js';
 import reportRoutes from './routes/report.routes.js';
+import triageRoutes from './routes/triage.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api/patient', patientRoutes);
 app.use('/api/emergency', emergencyRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/triage', triageRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -42,6 +44,7 @@ app.get('/', (req, res) => {
       emergency: '/api/emergency',
       medicines: '/api/medicines',
       reports: '/api/reports',
+      triage: '/api/triage',
     },
   });
 });

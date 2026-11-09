@@ -5,9 +5,10 @@ import FeatureGrid from './components/FeatureGrid.jsx';
 import AuthModal from './components/auth/AuthModal.jsx';
 import ProfileCard from './components/patient/ProfileCard.jsx';
 import EmergencyAlertModal from './components/triage/EmergencyAlertModal.jsx';
+import AdaptiveTriage from './components/triage/AdaptiveTriage.jsx';
 import MedicineAnalyzer from './components/medicines/MedicineAnalyzer.jsx';
 import LabReportAnalyzer from './components/reports/LabReportAnalyzer.jsx';
-import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText } from 'lucide-react';
+import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText, Stethoscope } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState('en');
@@ -104,7 +105,7 @@ export default function App() {
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Phase 3 Initialized • Multimodal Lab Report Analyzer Live</span>
+              <span>Phase 4 Initialized • Adaptive Triage, Voice & Vision Live</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
               {language === 'en'
@@ -113,23 +114,23 @@ export default function App() {
             </h1>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
               {language === 'en'
-                ? 'Upload CBC, Sugar, or Lipid lab reports for automated biomarker extraction, clinical reference range evaluation, and historical health trend tracking.'
-                : 'रक्त जांच रिपोर्ट अपलोड करें और बायोमार्कर विश्लेषण, सामान्य सीमा तुलना और स्वास्थ्य रुझान तुरंत देखें।'}
+                ? 'Adaptive physician-like differential diagnosis, bilingual Hindi/English voice assistant, dermatology vision screening, lab OCR, and drug safety.'
+                : 'अनुकूली डॉक्टर साक्षात्कार, हिंदी और अंग्रेजी आवाज सहायक, त्वचा छवि जांच और दवा सुरक्षा।'}
             </p>
 
             {/* Quick Status Bar */}
             <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium">
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+                <Stethoscope className="w-4 h-4 text-indigo-400" />
+                <span>Adaptive Triage & Voice Active</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <FileText className="w-4 h-4 text-teal-400" />
-                <span>Lab Report Analyzer Online</span>
+                <span>Lab Analyzer Online</span>
               </div>
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <Pill className="w-4 h-4 text-emerald-400" />
                 <span>Medicine Engine Active</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
-                <AlertTriangle className="w-4 h-4 text-red-400" />
-                <span>Emergency Interceptor Live</span>
               </div>
             </div>
           </div>
@@ -174,6 +175,15 @@ export default function App() {
             </button>
           </form>
         </div>
+
+        {/* Phase 4: Adaptive Clinical Triage, Voice Assistant & Vision Screening */}
+        <AdaptiveTriage
+          language={language}
+          onEmergencyTriggered={(emergData) => {
+            setEmergencyResult(emergData);
+            setIsEmergencyModalOpen(true);
+          }}
+        />
 
         {/* Phase 3: Multimodal Health Report Analyzer */}
         <LabReportAnalyzer user={user} language={language} />
