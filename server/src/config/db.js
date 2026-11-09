@@ -7,11 +7,42 @@ class InMemoryStore {
     this.patientProfiles = new Map();
     this.doctorProfiles = new Map();
     this.refreshTokens = new Map();
+    this.labReports = [];
     this.isFallback = false;
   }
 
   generateId() {
     return Math.random().toString(16).substring(2, 10) + Math.random().toString(16).substring(2, 10) + Math.random().toString(16).substring(2, 10);
+  }
+
+  // --- LAB REPORTS ---
+  async labReportCreate({ data }) {
+    const id = this.generateId();
+    const reportDoc = {
+      id,
+      patientId: data.patientId || null,
+      reportTitle: data.reportTitle || 'Diagnostic Lab Report',
+      reportDate: data.reportDate || new Date(),
+      reportType: data.reportType || 'GENERAL',
+      fileUrl: data.fileUrl || '',
+      cloudinaryId: data.cloudinaryId || '',
+      status: data.status || 'ANALYZED',
+      biomarkers: data.biomarkers || [],
+      aiSummary: data.aiSummary || '',
+      abnormalCount: data.abnormalCount || 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.labReports.push(reportDoc);
+    return reportDoc;
+  }
+
+  async labReportFindMany({ where, orderBy, take }) {
+    let list = this.labReports;
+    if (where?.patientId) {
+      list = list.filter((r) => r.patientId === where.patientId);
+    }
+    return list.slice(0, take || 50);
   }
 
   // --- USER ---
@@ -176,5 +207,9 @@ export const db = {
   refreshToken: {
     create: async (args) => (usePrisma ? prisma.refreshToken.create(args) : memStore.refreshTokenCreate(args)),
     findUnique: async (args) => (usePrisma ? prisma.refreshToken.findUnique(args) : memStore.refreshTokenFindUnique(args)),
+  },
+  labReport: {
+    create: async (args) => (usePrisma ? prisma.labReport.create(args) : memStore.labReportCreate(args)),
+    findMany: async (args) => (usePrisma ? prisma.labReport.findMany(args) : memStore.labReportFindMany(args)),
   },
 };

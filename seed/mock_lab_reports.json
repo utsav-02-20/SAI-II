@@ -1,0 +1,37 @@
+[
+  {
+    "reportTitle": "Complete Blood Count (CBC) with Peripheral Smear",
+    "reportType": "CBC",
+    "reportDate": "2026-11-01T08:30:00.000Z",
+    "biomarkers": [
+      { "name": "Hemoglobin", "value": 9.2, "unit": "g/dL" },
+      { "name": "Total Leukocyte Count (WBC)", "value": 13400, "unit": "/uL" },
+      { "name": "Platelet Count", "value": 160000, "unit": "/uL" },
+      { "name": "RBC", "value": 3.7, "unit": "million/uL" }
+    ],
+    "expectedAbnormal": ["Hemoglobin", "Total Leukocyte Count (WBC)"]
+  },
+  {
+    "reportTitle": "Comprehensive Diabetic & Metabolic Panel",
+    "reportType": "DIABETES",
+    "reportDate": "2026-11-02T09:00:00.000Z",
+    "biomarkers": [
+      { "name": "Fasting Blood Sugar", "value": 146, "unit": "mg/dL" },
+      { "name": "Postprandial Blood Sugar", "value": 215, "unit": "mg/dL" },
+      { "name": "HbA1c", "value": 7.3, "unit": "%" }
+    ],
+    "expectedAbnormal": ["Fasting Blood Sugar", "Postprandial Blood Sugar", "HbA1c"]
+  },
+  {
+    "reportTitle": "Lipid Profile (Fasting)",
+    "reportType": "LIPID",
+    "reportDate": "2026-11-03T07:45:00.000Z",
+    "biomarkers": [
+      { "name": "Total Cholesterol", "value": 245, "unit": "mg/dL" },
+      { "name": "Triglycerides", "value": 195, "unit": "mg/dL" },
+      { "name": "HDL", "value": 35, "unit": "mg/dL" },
+      { "name": "LDL", "value": 170, "unit": "mg/dL" }
+    ],
+    "expectedAbnormal": ["Total Cholesterol", "Triglycerides", "HDL", "LDL"]
+  }
+]

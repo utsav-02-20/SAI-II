@@ -6,7 +6,8 @@ import AuthModal from './components/auth/AuthModal.jsx';
 import ProfileCard from './components/patient/ProfileCard.jsx';
 import EmergencyAlertModal from './components/triage/EmergencyAlertModal.jsx';
 import MedicineAnalyzer from './components/medicines/MedicineAnalyzer.jsx';
-import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill } from 'lucide-react';
+import LabReportAnalyzer from './components/reports/LabReportAnalyzer.jsx';
+import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState('en');
@@ -103,7 +104,7 @@ export default function App() {
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Phase 2 Initialized • Verified Medicine Intelligence Live</span>
+              <span>Phase 3 Initialized • Multimodal Lab Report Analyzer Live</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
               {language === 'en'
@@ -112,19 +113,23 @@ export default function App() {
             </h1>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
               {language === 'en'
-                ? 'Check drug interactions, duplicate active ingredients, patient allergy contraindications, and food warnings grounded in OpenFDA & RxNorm.'
-                : 'दवाओं की परस्पर क्रिया, डुप्लीकेट ओवरडोज़ और भोजन चेतावनियों की प्रमाणित जांच।'}
+                ? 'Upload CBC, Sugar, or Lipid lab reports for automated biomarker extraction, clinical reference range evaluation, and historical health trend tracking.'
+                : 'रक्त जांच रिपोर्ट अपलोड करें और बायोमार्कर विश्लेषण, सामान्य सीमा तुलना और स्वास्थ्य रुझान तुरंत देखें।'}
             </p>
 
             {/* Quick Status Bar */}
             <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium">
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+                <FileText className="w-4 h-4 text-teal-400" />
+                <span>Lab Report Analyzer Online</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <Pill className="w-4 h-4 text-emerald-400" />
-                <span>OpenFDA & RxNorm Active</span>
+                <span>Medicine Engine Active</span>
               </div>
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <AlertTriangle className="w-4 h-4 text-red-400" />
-                <span>Emergency Red-Flag Interceptor Online</span>
+                <span>Emergency Interceptor Live</span>
               </div>
             </div>
           </div>
@@ -169,6 +174,9 @@ export default function App() {
             </button>
           </form>
         </div>
+
+        {/* Phase 3: Multimodal Health Report Analyzer */}
+        <LabReportAnalyzer user={user} language={language} />
 
         {/* Phase 2: Medicine Intelligence & Drug Safety Engine */}
         <MedicineAnalyzer user={user} language={language} />
