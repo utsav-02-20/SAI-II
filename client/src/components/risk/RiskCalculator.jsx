@@ -18,8 +18,18 @@ import {
   Apple,
   Clock,
   Printer,
-  RotateCcw
+  PieChart as ChartIcon,
+  ShieldCheck
 } from 'lucide-react';
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
+  Tooltip
+} from 'recharts';
 
 export default function RiskCalculator({ language = 'en' }) {
   // Input form state
@@ -140,6 +150,42 @@ export default function RiskCalculator({ language = 'en' }) {
         return 'text-emerald-700 bg-emerald-50 border-emerald-300';
     }
   };
+
+  // Prepare data for the 6-dimensional RiskRadarChart
+  const radarData = result
+    ? [
+        {
+          subject: 'Diabetes',
+          risk: result.diseaseRisks?.diabetes?.riskPercentage || 0,
+          benchmark: 15,
+        },
+        {
+          subject: 'Cardio ASCVD',
+          risk: result.diseaseRisks?.cardiovascular?.riskPercentage || 0,
+          benchmark: 10,
+        },
+        {
+          subject: 'Hypertension',
+          risk: result.diseaseRisks?.hypertension?.riskPercentage || 0,
+          benchmark: 15,
+        },
+        {
+          subject: 'BMI Adiposity',
+          risk: Math.min(100, Math.round((computedBmi / 35) * 100)),
+          benchmark: 45,
+        },
+        {
+          subject: 'Sleep Debt',
+          risk: Math.max(5, Math.min(100, Math.round(((8.5 - formData.sleepHoursPerNight) / 5) * 100))),
+          benchmark: 20,
+        },
+        {
+          subject: 'Inactivity',
+          risk: Math.max(5, Math.min(100, Math.round(((240 - Math.min(240, formData.exerciseMinutesPerWeek)) / 240) * 100))),
+          benchmark: 25,
+        },
+      ]
+    : [];
 
   return (
     <section className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -434,10 +480,10 @@ export default function RiskCalculator({ language = 'en' }) {
         {/* Results Section */}
         {result && (
           <div className="space-y-8 animate-fadeIn">
-            {/* 1. Biological Health Age Showcase Dial */}
+            {/* 1. Biological Health Age Showcase Dial with Circular Gauge */}
             <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl">
               <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                <div className="space-y-3 text-center lg:text-left">
+                <div className="space-y-3 text-center lg:text-left flex-1">
                   <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 text-teal-300 border border-white/10 text-xs font-semibold">
                     <Award className="w-3.5 h-3.5" />
                     <span>Longevity & Allostatic Balance</span>
@@ -446,38 +492,74 @@ export default function RiskCalculator({ language = 'en' }) {
                     {result.healthAge.headline}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-                    Based on your sleep architecture, cardiovascular biomarkers, metabolic BMI, and exercise frequency.
+                    Evaluated from sleep hygiene, cardiovascular biomarkers, metabolic BMI, and weekly cardio conditioning.
                   </p>
                 </div>
 
-                {/* Age Comparison Box */}
+                {/* HealthAgeDial: Circular Animated Progress Dial */}
                 <div className="flex items-center gap-6 bg-white/5 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
+                  {/* Calendar Age Display */}
                   <div className="text-center">
-                    <span className="text-xs text-slate-400 block uppercase tracking-wider font-semibold">Calendar Age</span>
+                    <span className="text-xs text-slate-400 block uppercase tracking-wider font-semibold">Calendar</span>
                     <span className="text-3xl sm:text-4xl font-black text-slate-200">
                       {result.healthAge.chronologicalAge}
                     </span>
                     <span className="text-[10px] text-slate-400 block mt-0.5">Years Old</span>
                   </div>
 
-                  <ArrowRight className="w-6 h-6 text-slate-500" />
+                  <ArrowRight className="w-5 h-5 text-slate-500" />
 
-                  <div className="text-center">
-                    <span className="text-xs text-teal-400 block uppercase tracking-wider font-semibold">Biological Age</span>
-                    <span
-                      className={`text-3xl sm:text-4xl font-black ${
-                        result.healthAge.longevityDeltaYears <= 0
-                          ? 'text-emerald-400'
-                          : result.healthAge.longevityDeltaYears > 4
-                          ? 'text-rose-400'
-                          : 'text-amber-400'
-                      }`}
-                    >
-                      {result.healthAge.biologicalHealthAge}
-                    </span>
-                    <span className="text-[10px] text-teal-200 block mt-0.5">
-                      {result.healthAge.longevityDeltaYears > 0 ? `+${result.healthAge.longevityDeltaYears} Yrs Wear` : `${result.healthAge.longevityDeltaYears} Yrs Youth`}
-                    </span>
+                  {/* Circular SVG Dial for Biological Age */}
+                  <div className="relative flex items-center justify-center">
+                    <svg className="w-28 h-28 transform -rotate-90">
+                      <circle
+                        cx="56"
+                        cy="56"
+                        r="44"
+                        stroke="rgba(255,255,255,0.12)"
+                        strokeWidth="8"
+                        fill="transparent"
+                      />
+                      <circle
+                        cx="56"
+                        cy="56"
+                        r="44"
+                        stroke={
+                          result.healthAge.longevityDeltaYears <= 0
+                            ? '#34d399'
+                            : result.healthAge.longevityDeltaYears > 4
+                            ? '#f87171'
+                            : '#fbbf24'
+                        }
+                        strokeWidth="8"
+                        strokeDasharray={2 * Math.PI * 44}
+                        strokeDashoffset={
+                          2 * Math.PI * 44 * (1 - Math.min(1, Math.max(0.1, result.healthAge.biologicalHealthAge / 90)))
+                        }
+                        strokeLinecap="round"
+                        fill="transparent"
+                        className="transition-all duration-1000 ease-out"
+                      />
+                    </svg>
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span
+                        className={`text-2xl font-black ${
+                          result.healthAge.longevityDeltaYears <= 0
+                            ? 'text-emerald-400'
+                            : result.healthAge.longevityDeltaYears > 4
+                            ? 'text-rose-400'
+                            : 'text-amber-400'
+                        }`}
+                      >
+                        {result.healthAge.biologicalHealthAge}
+                      </span>
+                      <span className="text-[9px] uppercase font-bold text-slate-300">
+                        {result.healthAge.longevityDeltaYears > 0
+                          ? `+${result.healthAge.longevityDeltaYears}y wear`
+                          : `${result.healthAge.longevityDeltaYears}y youth`}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -507,132 +589,166 @@ export default function RiskCalculator({ language = 'en' }) {
               </div>
             </div>
 
-            {/* 2. 10-Year Chronic Disease Risk Cards */}
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Flame className="w-5 h-5 text-teal-600" />
-                <h3 className="text-base font-bold text-slate-900">
-                  10-Year Clinical Chronic Disease Probabilities
-                </h3>
+            {/* 2. Visual Risk Radar Chart & Individual Disease Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Radar Chart Component */}
+              <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-between">
+                <div className="w-full flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <ChartIcon className="w-4 h-4 text-teal-600" />
+                    <span className="text-xs font-bold text-slate-800">Risk Radar Profile</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-medium">vs Longevity Baseline</span>
+                </div>
+
+                <div className="w-full h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
+                      <PolarGrid stroke="#e2e8f0" />
+                      <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 11 }} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 9 }} />
+                      <Radar
+                        name="Patient Risk (%)"
+                        dataKey="risk"
+                        stroke="#0d9488"
+                        fill="#14b8a6"
+                        fillOpacity={0.45}
+                      />
+                      <Radar
+                        name="Optimal Benchmark"
+                        dataKey="benchmark"
+                        stroke="#6366f1"
+                        fill="#818cf8"
+                        fillOpacity={0.15}
+                      />
+                      <Tooltip />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <p className="text-[11px] text-slate-500 text-center mt-1">
+                  Teal area illustrates your current metabolic & cardiovascular risk footprint.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {/* Disease Risk Cards */}
+              <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {/* Diabetes Card */}
                 {result.diseaseRisks?.diabetes && (
-                  <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-600">Type 2 Diabetes</span>
-                      <span
-                        className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full border ${getRiskColor(
-                          result.diseaseRisks.diabetes.riskCategory
-                        )}`}
-                      >
-                        {result.diseaseRisks.diabetes.riskCategory} RISK
-                      </span>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-baseline justify-between">
-                        <span className="text-2xl font-black text-slate-900">
-                          {result.diseaseRisks.diabetes.riskPercentage}%
+                  <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-slate-600">Type 2 Diabetes</span>
+                        <span
+                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${getRiskColor(
+                            result.diseaseRisks.diabetes.riskCategory
+                          )}`}
+                        >
+                          {result.diseaseRisks.diabetes.riskCategory}
                         </span>
-                        <span className="text-[11px] text-slate-500">10-Year ADA Probability</span>
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-teal-600 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${result.diseaseRisks.diabetes.riskPercentage}%` }}
-                        />
+
+                      <div className="space-y-1">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-2xl font-black text-slate-900">
+                            {result.diseaseRisks.diabetes.riskPercentage}%
+                          </span>
+                          <span className="text-[10px] text-slate-500">10-Yr ADA</span>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-teal-600 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${result.diseaseRisks.diabetes.riskPercentage}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
-                      <span className="font-bold text-slate-700 block">Top Contributing Drivers:</span>
-                      <ul className="space-y-1 text-slate-600 list-disc list-inside">
-                        {result.diseaseRisks.diabetes.primaryDrivers?.slice(0, 2).map((d, i) => (
-                          <li key={i}>{d}</li>
-                        ))}
-                      </ul>
+                    <div className="pt-2 border-t border-slate-100 text-xs">
+                      <span className="font-bold text-slate-700 block text-[11px]">Primary Driver:</span>
+                      <p className="text-slate-600 text-[11px] mt-0.5 line-clamp-2">
+                        {result.diseaseRisks.diabetes.primaryDrivers?.[0]}
+                      </p>
                     </div>
                   </div>
                 )}
 
                 {/* ASCVD Cardiovascular Card */}
                 {result.diseaseRisks?.cardiovascular && (
-                  <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-600">Cardiovascular (ASCVD)</span>
-                      <span
-                        className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full border ${getRiskColor(
-                          result.diseaseRisks.cardiovascular.riskCategory
-                        )}`}
-                      >
-                        {result.diseaseRisks.cardiovascular.riskCategory} RISK
-                      </span>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-baseline justify-between">
-                        <span className="text-2xl font-black text-slate-900">
-                          {result.diseaseRisks.cardiovascular.riskPercentage}%
+                  <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-slate-600">Cardiovascular</span>
+                        <span
+                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${getRiskColor(
+                            result.diseaseRisks.cardiovascular.riskCategory
+                          )}`}
+                        >
+                          {result.diseaseRisks.cardiovascular.riskCategory}
                         </span>
-                        <span className="text-[11px] text-slate-500">AHA/ACC 10-Yr Heart/Stroke</span>
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${result.diseaseRisks.cardiovascular.riskPercentage}%` }}
-                        />
+
+                      <div className="space-y-1">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-2xl font-black text-slate-900">
+                            {result.diseaseRisks.cardiovascular.riskPercentage}%
+                          </span>
+                          <span className="text-[10px] text-slate-500">AHA/ACC ASCVD</span>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${result.diseaseRisks.cardiovascular.riskPercentage}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
-                      <span className="font-bold text-slate-700 block">Primary Arterial Drivers:</span>
-                      <ul className="space-y-1 text-slate-600 list-disc list-inside">
-                        {result.diseaseRisks.cardiovascular.primaryDrivers?.slice(0, 2).map((d, i) => (
-                          <li key={i}>{d}</li>
-                        ))}
-                      </ul>
+                    <div className="pt-2 border-t border-slate-100 text-xs">
+                      <span className="font-bold text-slate-700 block text-[11px]">Primary Driver:</span>
+                      <p className="text-slate-600 text-[11px] mt-0.5 line-clamp-2">
+                        {result.diseaseRisks.cardiovascular.primaryDrivers?.[0]}
+                      </p>
                     </div>
                   </div>
                 )}
 
                 {/* Hypertension Card */}
                 {result.diseaseRisks?.hypertension && (
-                  <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-600">Hypertension</span>
-                      <span
-                        className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full border ${getRiskColor(
-                          result.diseaseRisks.hypertension.riskCategory
-                        )}`}
-                      >
-                        {result.diseaseRisks.hypertension.riskCategory} RISK
-                      </span>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-baseline justify-between">
-                        <span className="text-2xl font-black text-slate-900">
-                          {result.diseaseRisks.hypertension.riskPercentage}%
+                  <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-slate-600">Hypertension</span>
+                        <span
+                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${getRiskColor(
+                            result.diseaseRisks.hypertension.riskCategory
+                          )}`}
+                        >
+                          {result.diseaseRisks.hypertension.riskCategory}
                         </span>
-                        <span className="text-[11px] text-slate-500">Vascular Resistance Risk</span>
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-rose-500 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${result.diseaseRisks.hypertension.riskPercentage}%` }}
-                        />
+
+                      <div className="space-y-1">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-2xl font-black text-slate-900">
+                            {result.diseaseRisks.hypertension.riskPercentage}%
+                          </span>
+                          <span className="text-[10px] text-slate-500">Vascular Tone</span>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-rose-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${result.diseaseRisks.hypertension.riskPercentage}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
-                      <span className="font-bold text-slate-700 block">Etiological Contributors:</span>
-                      <ul className="space-y-1 text-slate-600 list-disc list-inside">
-                        {result.diseaseRisks.hypertension.primaryDrivers?.slice(0, 2).map((d, i) => (
-                          <li key={i}>{d}</li>
-                        ))}
-                      </ul>
+                    <div className="pt-2 border-t border-slate-100 text-xs">
+                      <span className="font-bold text-slate-700 block text-[11px]">Etiology:</span>
+                      <p className="text-slate-600 text-[11px] mt-0.5 line-clamp-2">
+                        {result.diseaseRisks.hypertension.primaryDrivers?.[0]}
+                      </p>
                     </div>
                   </div>
                 )}
