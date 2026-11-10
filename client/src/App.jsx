@@ -10,7 +10,9 @@ import MedicineAnalyzer from './components/medicines/MedicineAnalyzer.jsx';
 import LabReportAnalyzer from './components/reports/LabReportAnalyzer.jsx';
 import ClinicalAssistant from './components/knowledge/ClinicalAssistant.jsx';
 import RiskCalculator from './components/risk/RiskCalculator.jsx';
-import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText, Stethoscope, BookOpen, Activity } from 'lucide-react';
+import AdherenceTracker from './components/adherence/AdherenceTracker.jsx';
+import TeleconsultationPortal from './components/teleconsult/TeleconsultationPortal.jsx';
+import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText, Stethoscope, BookOpen, Activity, Video } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState('en');
@@ -107,7 +109,7 @@ export default function App() {
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Phase 6 Active • ML Disease Risk, Biological Health Age & Prevention Roadmap</span>
+              <span>Phase 7 Live • Adherence Tracker, Longitudinal Replay & Teleconsultation</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
               {language === 'en'
@@ -116,27 +118,27 @@ export default function App() {
             </h1>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
               {language === 'en'
-                ? 'Cardiovascular & Diabetes 10-yr ML risk models, biological health age calculator, WHO/CDC RAG assistant, adaptive triage, and lab OCR.'
-                : 'हृदय व मधुमेह जोखिम भविष्यवाणियां, जैविक स्वास्थ्य आयु, विश्व स्वास्थ्य संगठन प्रमाणित उत्तर और डॉक्टर साक्षात्कार।'}
+                ? 'Medication habit streaks, longitudinal symptom replay (+140% fever flare-up detection), WebRTC doctor tele-triage, ML risk models, and lab OCR.'
+                : 'दवा स्ट्रीक ट्रैकर, दीर्घकालिक लक्षण बदलाव विश्लेषण, डॉक्टर वीडियो परामर्श एवं स्वास्थ्य रिपोर्ट विश्लेषण।'}
             </p>
 
             {/* Quick Status Bar */}
             <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium">
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
-                <Activity className="w-4 h-4 text-emerald-400" />
+                <Pill className="w-4 h-4 text-emerald-400" />
+                <span>Adherence & Streaks Active</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+                <Video className="w-4 h-4 text-cyan-400" />
+                <span>Doctor Tele-Triage & SBAR</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+                <Activity className="w-4 h-4 text-teal-400" />
                 <span>ML Disease Risk & Health Age</span>
               </div>
               <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                 <BookOpen className="w-4 h-4 text-blue-400" />
                 <span>WHO & CDC Grounded RAG</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
-                <Stethoscope className="w-4 h-4 text-indigo-400" />
-                <span>Adaptive Triage & Voice</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
-                <FileText className="w-4 h-4 text-teal-400" />
-                <span>Lab Analyzer Online</span>
               </div>
             </div>
           </div>
@@ -181,6 +183,12 @@ export default function App() {
             </button>
           </form>
         </div>
+
+        {/* Phase 7: Medication Adherence & Habit Streak Tracker */}
+        <AdherenceTracker user={user} language={language} />
+
+        {/* Phase 7: Longitudinal Symptom Replay & Doctor Teleconsultation */}
+        <TeleconsultationPortal user={user} language={language} />
 
         {/* Phase 6: Disease Risk Score (ML), Biological Health Age & Prevention Roadmap */}
         <RiskCalculator language={language} />

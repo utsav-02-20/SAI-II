@@ -12,6 +12,8 @@ import reportRoutes from './routes/report.routes.js';
 import triageRoutes from './routes/triage.routes.js';
 import knowledgeRoutes from './routes/knowledge.routes.js';
 import riskRoutes from './routes/risk.routes.js';
+import adherenceRoutes from './routes/adherence.routes.js';
+import teleconsultRoutes from './routes/teleconsult.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -36,6 +38,8 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/triage', triageRoutes);
 app.use('/api/knowledge', knowledgeRoutes);
 app.use('/api/risk', riskRoutes);
+app.use('/api/adherence', adherenceRoutes);
+app.use('/api/teleconsult', teleconsultRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -51,6 +55,8 @@ app.get('/', (req, res) => {
       triage: '/api/triage',
       knowledge: '/api/knowledge',
       risk: '/api/risk',
+      adherence: '/api/adherence',
+      teleconsult: '/api/teleconsult',
     },
   });
 });

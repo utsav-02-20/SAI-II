@@ -35,6 +35,9 @@ A production-ready digital health companion built with **Express.js (Pure JavaSc
 - 🧬 **10-Year Chronic Disease Risk Engine (ML):** ADA-calibrated Type 2 Diabetes score, AHA/ACC Pooled Cohort ASCVD Cardiovascular risk, and multifactorial Hypertension models.
 - ⏳ **Biological Health Age Calculator:** Quantifies allostatic wear vs chronological age based on sleep debt, smoking, BMI, and physical activity.
 - 📋 **Personalized 4-Pillar Prevention Roadmap:** Evidence-based daily prescription calculating exact hydration targets ($kg \times 0.033 + \text{workout bonus}$), sodium restrictions, MET-minutes, and circadian protocols.
+- 💊 **Medication Adherence Tracker & Habit Streaks:** Tracks scheduled doses, logs actions (`TAKEN`, `SKIPPED`, `SNOOZED`), calculates running consecutive streaks, unlocks milestone badges (3-Day Pioneer, 7-Day Champion), and simulates multi-channel reminder notifications.
+- 📈 **Longitudinal Symptom Replay & Flare-Up Detection:** Month-over-month symptom frequency comparison (+140% fever surge detection), automated clinical escalation triggers, and interactive time-series timeline graphs.
+- 👨‍⚕️ **Doctor Teleconsultation & Pre-Triage Handover:** Attending doctor portal with automated clinical SBAR handover packets, WebRTC virtual consultation rooms with STUN configuration, and digital e-prescription signing.
 
 ---
 
@@ -58,7 +61,8 @@ SAI II/
 │   ├── src/
 │   │   ├── components/        # Header, AuthModal, ProfileCard, EmergencyAlertModal,
 │   │   │                      # MedicineAnalyzer, LabReportAnalyzer, AdaptiveTriage,
-│   │   │                      # ClinicalAssistant, RiskCalculator, FeatureGrid
+│   │   │                      # ClinicalAssistant, RiskCalculator, AdherenceTracker,
+│   │   │                      # TeleconsultationPortal, FeatureGrid
 │   │   ├── App.jsx            # Main unified dashboard view
 │   │   └── main.jsx
 │   ├── vite.config.js         # Configured with proxy to http://localhost:5000
@@ -66,7 +70,7 @@ SAI II/
 │
 ├── ai-service/                # Python FastAPI Microservice (Port 8000)
 │   ├── app/
-│   │   ├── api/               # Health & Risk evaluation endpoints
+│   │   ├── api/               # Health, Risk, Adherence & Longitudinal Trend endpoints
 │   │   ├── core/              # Config & Gemini client
 │   │   ├── models/            # XGBoost/Statistical Risk & Health Age models
 │   │   └── main.py            # FastAPI entrypoint
@@ -89,6 +93,7 @@ SAI II/
 │   ├── test_adaptive_triage.py    # Multi-turn triage & vision tests
 │   ├── test_rag_and_myths.py      # WHO RAG & Myth Buster tests
 │   ├── test_ml_risk_models.py     # Chronic Disease ML Risk & Health Age tests
+│   ├── test_adherence_and_teleconsult.py # Adherence streaks & Doctor Tele-Triage tests
 │   └── requirements.txt
 │
 ├── .env.example               # Environment template
@@ -252,7 +257,7 @@ pytest tests/ -v
 
 > **Note:** The test harness automatically starts and manages the Express and FastAPI servers during testing!
 
-### Current Test Coverage (42 Passing Tests):
+### Current Test Coverage (48 Passing Tests):
 - `tests/test_health.py` (3 tests): Express health, Root welcome, FastAPI health.
 - `tests/test_auth_and_emergency.py` (9 tests): User registration, duplicate email handling, login, patient profile CRUD, and real-time emergency red-flag triggers (cardiac, stroke, anaphylaxis).
 - `tests/test_medicine_safety.py` (6 tests): Duplicate active ingredient overdose, severe drug-drug interactions (Aspirin + Warfarin), allergy contraindication cross-checking, and food interactions (Atorvastatin + Grapefruit).
@@ -260,6 +265,7 @@ pytest tests/ -v
 - `tests/test_adaptive_triage.py` (6 tests): Multi-turn differential diagnosis questions, SBAR clinical summary generation, emergency escalation, and vision symptom screening (skin rash, eye redness).
 - `tests/test_rag_and_myths.py` (6 tests): Grounded WHO citations, dengue fluid management, papaya leaf myth classification, colloidal silver toxicity warnings, and micronutrient deficiency inference.
 - `tests/test_ml_risk_models.py` (6 tests): High-risk metabolic scoring (>60% Diabetes, elevated Health Age), marathon runner longevity profile (<42y biological age, low risks), ASCVD smoking/BP drivers, hydration/lifestyle prevention formulas, and FastAPI ML microservice endpoints.
+- `tests/test_adherence_and_teleconsult.py` (6 tests): Medication schedule creation, dose logging & 7-day streak badges, longitudinal symptom replay (+140% fever spike), doctor directory & SBAR pre-triage handover packet, WebRTC room launcher with STUN configuration, and FastAPI dose lapse predictor.
 
 ---
 
@@ -288,6 +294,16 @@ pytest tests/ -v
 | `POST` | `/api/risk/evaluate` | Comprehensive 10-yr disease risk, Health Age & Prevention Plan |
 | `POST` | `/api/risk/health-age` | Compute biological health age vs chronological age |
 | `POST` | `/api/risk/prevention-plan` | Generate personalized 4-pillar prevention roadmap |
+| `GET` | `/api/adherence/schedule` | Retrieve active prescribed medication schedule |
+| `POST` | `/api/adherence/schedule` | Add or update prescribed medication schedule |
+| `POST` | `/api/adherence/log` | Record dose action (`TAKEN`, `SKIPPED`, `SNOOZED`) & update streak |
+| `GET` | `/api/adherence/stats` | Adherence rate (%), consecutive streak days, and milestone badges |
+| `POST` | `/api/adherence/simulate-reminder` | Simulate multi-channel Web Push / SMS medication alert |
+| `GET` | `/api/teleconsult/trends/replay` | Longitudinal symptom trajectory & MoM comparison (+140% alert) |
+| `GET` | `/api/teleconsult/doctors` | Verified doctor directory with specialties and consultation fees |
+| `GET` | `/api/teleconsult/pre-triage/:id` | Automated clinical SBAR pre-triage handover packet |
+| `POST` | `/api/teleconsult/room/create` | Launch WebRTC consultation room with STUN configuration |
+| `POST` | `/api/teleconsult/room/finalize` | Finalize consultation, record notes & issue signed e-prescription |
 
 ---
 

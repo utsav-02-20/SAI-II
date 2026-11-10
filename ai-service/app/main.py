@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.health import router as health_router
 from app.api.risk import router as risk_router
+from app.api.adherence import router as adherence_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -22,6 +23,7 @@ app.add_middleware(
 # Mount routes
 app.include_router(health_router, prefix="", tags=["System Health"])
 app.include_router(risk_router, prefix="/api", tags=["Disease Risk & Longevity"])
+app.include_router(adherence_router, prefix="/api", tags=["Adherence & Trends"])
 
 @app.get("/")
 async def root():
