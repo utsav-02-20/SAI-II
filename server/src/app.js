@@ -14,6 +14,7 @@ import knowledgeRoutes from './routes/knowledge.routes.js';
 import riskRoutes from './routes/risk.routes.js';
 import adherenceRoutes from './routes/adherence.routes.js';
 import teleconsultRoutes from './routes/teleconsult.routes.js';
+import complianceRoutes from './routes/compliance.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -40,6 +41,7 @@ app.use('/api/knowledge', knowledgeRoutes);
 app.use('/api/risk', riskRoutes);
 app.use('/api/adherence', adherenceRoutes);
 app.use('/api/teleconsult', teleconsultRoutes);
+app.use('/api/compliance', complianceRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -57,6 +59,7 @@ app.get('/', (req, res) => {
       risk: '/api/risk',
       adherence: '/api/adherence',
       teleconsult: '/api/teleconsult',
+      compliance: '/api/compliance',
     },
   });
 });

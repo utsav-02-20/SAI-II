@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: arogya-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: arogya_db
+    volumes:
+      - mongodb_data:/data/db
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: arogya-express-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      DATABASE_URL: mongodb://mongodb:27017/arogya_db
+      CORS_ORIGIN: http://localhost:3000
+      JWT_ACCESS_SECRET: arogya-super-secret-access-token-key-2026
+      JWT_REFRESH_SECRET: arogya-super-secret-refresh-token-key-2026
+      ENCRYPTION_SECRET: arogya-ai-clinical-secret-salt-2026
+    depends_on:
+      - mongodb
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: arogya-ai-microservice
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      ENVIRONMENT: production
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: arogya-react-client
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+volumes:
+  mongodb_data:

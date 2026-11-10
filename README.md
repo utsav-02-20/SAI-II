@@ -38,6 +38,8 @@ A production-ready digital health companion built with **Express.js (Pure JavaSc
 - 💊 **Medication Adherence Tracker & Habit Streaks:** Tracks scheduled doses, logs actions (`TAKEN`, `SKIPPED`, `SNOOZED`), calculates running consecutive streaks, unlocks milestone badges (3-Day Pioneer, 7-Day Champion), and simulates multi-channel reminder notifications.
 - 📈 **Longitudinal Symptom Replay & Flare-Up Detection:** Month-over-month symptom frequency comparison (+140% fever surge detection), automated clinical escalation triggers, and interactive time-series timeline graphs.
 - 👨‍⚕️ **Doctor Teleconsultation & Pre-Triage Handover:** Attending doctor portal with automated clinical SBAR handover packets, WebRTC virtual consultation rooms with STUN configuration, and digital e-prescription signing.
+- 🔒 **HIPAA & Indian DPDP Regulatory Hardening:** AES-256-GCM encryption at rest for sensitive PHI, automated HIPAA Safe Harbor PII scrubbing before AI queries, and mandatory clinical disclaimer acknowledgement modal.
+- 🐳 **Production Docker Containerization:** Multi-stage container images for Express, Vite/Nginx, and Python FastAPI microservice orchestrated via `docker-compose.yml`.
 
 ---
 
@@ -257,7 +259,7 @@ pytest tests/ -v
 
 > **Note:** The test harness automatically starts and manages the Express and FastAPI servers during testing!
 
-### Current Test Coverage (48 Passing Tests):
+### Current Test Coverage (49 Passing Tests):
 - `tests/test_health.py` (3 tests): Express health, Root welcome, FastAPI health.
 - `tests/test_auth_and_emergency.py` (9 tests): User registration, duplicate email handling, login, patient profile CRUD, and real-time emergency red-flag triggers (cardiac, stroke, anaphylaxis).
 - `tests/test_medicine_safety.py` (6 tests): Duplicate active ingredient overdose, severe drug-drug interactions (Aspirin + Warfarin), allergy contraindication cross-checking, and food interactions (Atorvastatin + Grapefruit).
@@ -266,6 +268,28 @@ pytest tests/ -v
 - `tests/test_rag_and_myths.py` (6 tests): Grounded WHO citations, dengue fluid management, papaya leaf myth classification, colloidal silver toxicity warnings, and micronutrient deficiency inference.
 - `tests/test_ml_risk_models.py` (6 tests): High-risk metabolic scoring (>60% Diabetes, elevated Health Age), marathon runner longevity profile (<42y biological age, low risks), ASCVD smoking/BP drivers, hydration/lifestyle prevention formulas, and FastAPI ML microservice endpoints.
 - `tests/test_adherence_and_teleconsult.py` (6 tests): Medication schedule creation, dose logging & 7-day streak badges, longitudinal symptom replay (+140% fever spike), doctor directory & SBAR pre-triage handover packet, WebRTC room launcher with STUN configuration, and FastAPI dose lapse predictor.
+- `tests/test_e2e_patient_journey.py` (1 test): Comprehensive 10-step full patient lifecycle integration test (Auth, Profile, Drug safety, Lab OCR, Triage, ML Risk, Adherence, Symptom replay, Teleconsultation, and AES-256/PII scrubbing).
+
+---
+
+## 🐳 Docker Containerization & Local Staging
+
+You can launch all platform tiers (Express API, React Frontend via Nginx, Python AI Microservice, and MongoDB) with a single command:
+
+```bash
+# Build and run all services in the background
+docker compose up --build -d
+
+# View service logs
+docker compose logs -f
+
+# Teardown services
+docker compose down
+```
+
+- **React Client:** `http://localhost:3000`
+- **Express Backend:** `http://localhost:5000`
+- **Python FastAPI Service:** `http://localhost:8000`
 
 ---
 
@@ -304,6 +328,10 @@ pytest tests/ -v
 | `GET` | `/api/teleconsult/pre-triage/:id` | Automated clinical SBAR pre-triage handover packet |
 | `POST` | `/api/teleconsult/room/create` | Launch WebRTC consultation room with STUN configuration |
 | `POST` | `/api/teleconsult/room/finalize` | Finalize consultation, record notes & issue signed e-prescription |
+| `POST` | `/api/compliance/encrypt-phi` | Encrypt sensitive health data using AES-256-GCM |
+| `POST` | `/api/compliance/decrypt-phi` | Decrypt authorized health data |
+| `POST` | `/api/compliance/scrub-pii` | De-identify text per HIPAA Safe Harbor § 164.514(b) |
+| `GET` | `/api/compliance/status` | Current HIPAA, Indian DPDP, and ABDM regulatory audit status |
 
 ---
 

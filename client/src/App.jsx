@@ -12,6 +12,7 @@ import ClinicalAssistant from './components/knowledge/ClinicalAssistant.jsx';
 import RiskCalculator from './components/risk/RiskCalculator.jsx';
 import AdherenceTracker from './components/adherence/AdherenceTracker.jsx';
 import TeleconsultationPortal from './components/teleconsult/TeleconsultationPortal.jsx';
+import DisclaimerModal from './components/compliance/DisclaimerModal.jsx';
 import { ShieldCheck, Heart, Sparkles, AlertTriangle, Send, Pill, FileText, Stethoscope, BookOpen, Activity, Video } from 'lucide-react';
 
 export default function App() {
@@ -256,6 +257,9 @@ export default function App() {
         emergencyData={emergencyResult}
         language={language}
       />
+
+      {/* Regulatory & Clinical Disclaimer Modal */}
+      <DisclaimerModal language={language} />
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-6">
