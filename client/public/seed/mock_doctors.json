@@ -1,0 +1,30 @@
+[
+  {
+    "email": "dr.rohit.verma@example.com",
+    "passwordHash": "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekd59g0xW.V8HlQf2",
+    "phone": "+919811223344",
+    "role": "DOCTOR",
+    "doctorProfile": {
+      "fullName": "Dr. Rohit Verma, MD",
+      "specialty": "General Physician & Internal Medicine",
+      "medicalLicenseNo": "MCI-IND-88421",
+      "experienceYears": 14,
+      "consultationFee": 600.0,
+      "isAvailable": true
+    }
+  },
+  {
+    "email": "dr.meera.sen@example.com",
+    "passwordHash": "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekd59g0xW.V8HlQf2",
+    "phone": "+919811223355",
+    "role": "DOCTOR",
+    "doctorProfile": {
+      "fullName": "Dr. Meera Sen, MD, DM",
+      "specialty": "Cardiologist",
+      "medicalLicenseNo": "MCI-IND-99312",
+      "experienceYears": 18,
+      "consultationFee": 1200.0,
+      "isAvailable": true
+    }
+  }
+]

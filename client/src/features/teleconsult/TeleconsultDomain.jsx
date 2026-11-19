@@ -12,7 +12,6 @@ import {
   AlertTriangle,
   Stethoscope,
   Send,
-  Sparkles,
 } from 'lucide-react';
 import {
   ResponsiveContainer,

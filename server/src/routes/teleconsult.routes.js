@@ -16,5 +16,6 @@ router.get('/doctors', getDoctors);
 router.get('/pre-triage/:patientId?', getPreTriagePacket);
 router.post('/room/create', createTeleconsultRoom);
 router.post('/room/finalize', finalizeConsultation);
+router.post('/sbar/generate', finalizeConsultation);
 
 export default router;

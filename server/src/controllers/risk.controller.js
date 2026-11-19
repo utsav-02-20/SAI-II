@@ -1,4 +1,5 @@
 import { RiskService } from '../services/risk.service.js';
+import { ClinicalLLMService } from '../services/llm.service.js';
 
 /**
  * Normalizes input keys from snake_case or camelCase to standard internal format
@@ -32,8 +33,31 @@ function normalizePayload(body) {
 export const evaluateFullRisk = async (req, res, next) => {
   try {
     const input = normalizePayload(req.body);
-    const result = RiskService.evaluateFullProfile(input);
-    return res.status(200).json(result);
+    const llmAssessment = await ClinicalLLMService.evaluateRiskWithLLM(input);
+
+    return res.status(200).json({
+      success: true,
+      status: 'success',
+      engine: llmAssessment.engine,
+      isLLM: llmAssessment.isLLM,
+      assessment: llmAssessment,
+      healthAge: {
+        chronologicalAge: input.age,
+        biologicalHealthAge: llmAssessment.biologicalAge,
+        healthAgeDelta: llmAssessment.healthAgeDelta,
+        primaryDrivers: llmAssessment.primaryDrivers,
+        rejuvenationPotentialYears: llmAssessment.rejuvenationPotentialYears,
+      },
+      diseaseRisks: {
+        cardiovascular: { riskPercentage: llmAssessment.cvdRiskPercent, score: llmAssessment.cvdScore },
+        diabetes: { score: llmAssessment.metabolicScore },
+        hypertension: { score: llmAssessment.htnScore },
+      },
+      preventionPlan: {
+        lifestyleRoadmap: llmAssessment.preventionRoadmap,
+        clinicalSummary: llmAssessment.clinicalSummary,
+      },
+    });
   } catch (error) {
     next(error);
   }

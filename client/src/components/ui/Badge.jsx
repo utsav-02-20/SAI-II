@@ -6,8 +6,10 @@ import { cn } from '../../utils/cn';
  */
 
 /**
- * Modern ultra-minimalist badge primitive.
- * @param {React.HTMLAttributes<HTMLDivElement> & {
+ * Restrained clinical tag primitive.
+ * Designed with disciplined 1px borders, high-contrast text, and zero pastel-pill bloating.
+ * 
+ * @param {React.HTMLAttributes<HTMLSpanElement> & {
  *   variant?: BadgeVariant;
  * }} props
  */
@@ -18,17 +20,17 @@ export function Badge({
   ...props
 }) {
   const variantStyles = {
-    neutral: 'bg-zinc-100 text-zinc-700 border-zinc-200/80',
-    accent: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    warning: 'bg-amber-50 text-amber-800 border-amber-200',
-    danger: 'bg-rose-50 text-rose-700 border-rose-200',
-    outline: 'bg-transparent text-zinc-600 border-zinc-200',
+    neutral: 'bg-zinc-50 text-zinc-700 border-zinc-200',
+    accent: 'bg-zinc-100 text-zinc-800 border-zinc-300 font-mono',
+    warning: 'bg-zinc-50 text-amber-900 border-amber-300/80 font-mono',
+    danger: 'bg-red-50 text-red-700 border-red-200 font-mono',
+    outline: 'bg-transparent text-zinc-600 border-zinc-200 font-mono',
   };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border tracking-tight',
+        'inline-flex items-center gap-1 px-1.5 py-0.5 rounded-xs text-[10px] sm:text-[11px] font-medium border tracking-tight uppercase tabular-nums',
         variantStyles[variant] || variantStyles.neutral,
         className
       )}

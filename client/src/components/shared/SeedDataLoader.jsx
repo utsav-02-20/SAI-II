@@ -29,8 +29,6 @@ export function SeedDataLoader({
   const handleFetchSeed = async () => {
     setLoading(true);
     try {
-      // Dynamic import on explicit user trigger
-      let data = [];
       const seedFileMap = {
         medicines: 'mock_medicines.json',
         patients: 'mock_patients.json',
@@ -39,51 +37,25 @@ export function SeedDataLoader({
         guidelines: 'mock_guidelines.json',
       };
 
-      try {
-        switch (seedType) {
-          case 'medicines': {
-            const mod = await import('../../../../seed/mock_medicines.json');
-            data = mod.default || mod;
-            break;
-          }
-          case 'patients': {
-            const mod = await import('../../../../seed/mock_patients.json');
-            data = mod.default || mod;
-            break;
-          }
-          case 'doctors': {
-            const mod = await import('../../../../seed/mock_doctors.json');
-            data = mod.default || mod;
-            break;
-          }
-          case 'lab_reports': {
-            const mod = await import('../../../../seed/mock_lab_reports.json');
-            data = mod.default || mod;
-            break;
-          }
-          case 'guidelines': {
-            const mod = await import('../../../../seed/mock_guidelines.json');
-            data = mod.default || mod;
-            break;
-          }
-          default:
-            console.warn(`Unknown seed type: ${seedType}`);
-        }
-      } catch (importErr) {
-        // Fallback to fetch if filesystem boundary prevents ESM import
-        const filename = seedFileMap[seedType];
-        if (filename) {
-          const res = await fetch(`/seed/${filename}`);
-          data = await res.json();
-        }
+      const filename = seedFileMap[seedType];
+      if (!filename) {
+        console.warn(`Unknown seed type: ${seedType}`);
+        return;
       }
+
+      // Lazy on-demand runtime fetch (Zero static bundle inclusion)
+      const res = await fetch(`/seed/${filename}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error ${res.status} loading /seed/${filename}`);
+      }
+      const data = await res.json();
 
       if (Array.isArray(data)) {
         setLoadedCount(data.length);
         onLoadSeed(data);
       }
     } catch (err) {
-      console.error(`Failed to load seed dataset for ${seedType}`, err);
+      console.error(`Failed to load seed dataset for ${seedType}:`, err);
     } finally {
       setLoading(false);
     }

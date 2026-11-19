@@ -24,7 +24,17 @@ const optionalAuth = async (req, res, next) => {
   next();
 };
 
-router.post('/analyze', optionalAuth, upload.single('file'), analyzeReport);
+const normalizeUpload = (req, res, next) => {
+  upload.any()(req, res, (err) => {
+    if (err) return next(err);
+    if (req.files && req.files.length > 0) {
+      req.file = req.files[0];
+    }
+    next();
+  });
+};
+
+router.post('/analyze', optionalAuth, normalizeUpload, analyzeReport);
 router.get('/', optionalAuth, getReports);
 router.get('/trend', optionalAuth, getBiomarkerTrend);
 

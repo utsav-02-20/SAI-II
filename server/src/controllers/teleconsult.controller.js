@@ -55,7 +55,18 @@ export const finalizeConsultation = async (req, res, next) => {
   try {
     const appointmentId = req.body.appointmentId || 'apt-1';
     const result = await TeleconsultationService.finalizeConsultation(appointmentId, req.body);
-    return res.status(200).json(result);
+    const sbar = {
+      situation: `Teleconsultation session finalized for patient ${req.body.patientId || 'P-101'}.`,
+      background: req.body.symptoms || 'Patient presented with acute clinical symptoms during video consult.',
+      assessment: result.consultationNotes?.clinicalImpression || 'Clinical evaluation completed.',
+      recommendation: result.consultationNotes?.doctorNotes || 'Follow-up in 3 days.',
+    };
+
+    return res.status(200).json({
+      success: true,
+      sbar,
+      ...result,
+    });
   } catch (error) {
     next(error);
   }

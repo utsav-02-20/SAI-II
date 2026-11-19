@@ -11,6 +11,8 @@ const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
 
 router.post('/start', startTriage);
 router.post('/next', nextTriageQuestion);
+router.post('/answer', nextTriageQuestion);
 router.post('/analyze-image', upload.single('image'), analyzeImage);
+router.post('/vision/simulate', analyzeImage);
 
 export default router;

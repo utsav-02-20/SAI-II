@@ -178,13 +178,13 @@ export function TriageDomain({ language = 'en' }) {
         tag="Life-Safety Critical"
         badgeVariant="danger"
         actions={
-          <div className="flex items-center gap-1.5 p-1 bg-zinc-100 rounded-lg border border-zinc-200">
+          <div className="flex items-center gap-1 p-0.5 bg-zinc-100 rounded-xs border border-zinc-200 font-mono text-xs">
             <button
               type="button"
               onClick={() => setActiveTab('redflag')}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-2 py-1 rounded-xs transition-colors ${
                 activeTab === 'redflag'
-                  ? 'bg-white text-zinc-900 shadow-xs'
+                  ? 'bg-white text-zinc-950 font-semibold shadow-xs'
                   : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
@@ -193,9 +193,9 @@ export function TriageDomain({ language = 'en' }) {
             <button
               type="button"
               onClick={() => setActiveTab('adaptive')}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-2 py-1 rounded-xs transition-colors ${
                 activeTab === 'adaptive'
-                  ? 'bg-white text-zinc-900 shadow-xs'
+                  ? 'bg-white text-zinc-950 font-semibold shadow-xs'
                   : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
@@ -204,9 +204,9 @@ export function TriageDomain({ language = 'en' }) {
             <button
               type="button"
               onClick={() => setActiveTab('vision')}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-2 py-1 rounded-xs transition-colors ${
                 activeTab === 'vision'
-                  ? 'bg-white text-zinc-900 shadow-xs'
+                  ? 'bg-white text-zinc-950 font-semibold shadow-xs'
                   : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >

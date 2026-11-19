@@ -5,7 +5,6 @@ import {
   Search,
   ShieldAlert,
   Salad,
-  Sparkles,
   ExternalLink,
   CheckCircle2,
   AlertTriangle,

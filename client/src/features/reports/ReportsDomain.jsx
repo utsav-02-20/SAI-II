@@ -6,7 +6,7 @@ import {
   CheckCircle2,
   AlertCircle,
   TrendingUp,
-  Sparkles,
+  Search,
   BarChart2,
   Database,
 } from 'lucide-react';
@@ -84,7 +84,7 @@ export function ReportsDomain({ user, language = 'en' }) {
 
       const res = await axios.post('/api/reports/analyze', formData, { headers });
       if (res.data.success) {
-        setAnalysisResult(res.data.report);
+        setAnalysisResult(res.data.report || res.data.analysis);
       } else {
         setError(res.data.error || 'Failed to parse lab report');
       }
@@ -172,7 +172,7 @@ export function ReportsDomain({ user, language = 'en' }) {
                 disabled={!selectedFile}
                 isLoading={loading}
                 onClick={handleUploadAndAnalyze}
-                leftIcon={<Sparkles className="w-3.5 h-3.5" />}
+                leftIcon={<Search className="w-3.5 h-3.5" strokeWidth={1.5} />}
               >
                 {loading ? 'Running Multimodal OCR...' : 'Run OCR & Interpret Report'}
               </Button>

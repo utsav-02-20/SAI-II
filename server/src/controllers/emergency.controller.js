@@ -1,4 +1,5 @@
 import { db } from '../config/db.js';
+import { ClinicalLLMService } from '../services/llm.service.js';
 
 // Deterministic Emergency Clinical Criteria
 const EMERGENCY_CRITERIA = [
@@ -79,15 +80,28 @@ export const checkEmergency = async (req, res) => {
 
     let detectedEmergency = null;
 
-    // Check each emergency rule
-    for (const criterion of EMERGENCY_CRITERIA) {
-      for (const kw of criterion.keywords) {
-        if (queryText.includes(kw.toLowerCase())) {
-          detectedEmergency = criterion;
-          break;
+    // 1. First probe live LLM Triage API
+    const llmEmergency = await ClinicalLLMService.evaluateEmergencyWithLLM(queryText);
+    if (llmEmergency && llmEmergency.isEmergency) {
+      detectedEmergency = {
+        category: llmEmergency.category || 'EMERGENCY_TRIAGE',
+        name: llmEmergency.title || 'Acute Emergency Flag Detected',
+        action: llmEmergency.clinicalAction || 'Seek emergency medical evaluation immediately.',
+        actionHi: 'तत्काल आपातकालीन चिकित्सा मूल्यांकन प्राप्त करें।',
+      };
+    }
+
+    // 2. Deterministic safety baseline fallback
+    if (!detectedEmergency) {
+      for (const criterion of EMERGENCY_CRITERIA) {
+        for (const kw of criterion.keywords) {
+          if (queryText.includes(kw.toLowerCase())) {
+            detectedEmergency = criterion;
+            break;
+          }
         }
+        if (detectedEmergency) break;
       }
-      if (detectedEmergency) break;
     }
 
     // If authenticated user, fetch emergency contacts

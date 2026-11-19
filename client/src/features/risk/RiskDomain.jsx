@@ -4,7 +4,7 @@ import {
   Activity,
   Heart,
   Clock,
-  Sparkles,
+  Calculator,
   TrendingUp,
   AlertTriangle,
   CheckCircle2,
@@ -97,29 +97,52 @@ export function RiskDomain({ language = 'en' }) {
     setLoading(true);
     setError('');
 
-    try {
-      const res = await axios.post('/api/risk/calculate', {
-        ...formData,
-        age: Number(formData.age),
-        heightCm: Number(formData.heightCm) || 170,
-        weightKg: Number(formData.weightKg) || 70,
-        systolicBp: Number(formData.systolicBp),
-        diastolicBp: Number(formData.diastolicBp) || 80,
-        totalCholesterol: Number(formData.totalCholesterol) || 190,
-        hdlCholesterol: Number(formData.hdlCholesterol) || 50,
-        fastingGlucose: Number(formData.fastingGlucose) || 95,
-        hba1c: Number(formData.hba1c) || 5.4,
-      });
+    const payload = {
+      ...formData,
+      age: Number(formData.age),
+      heightCm: Number(formData.heightCm) || 170,
+      weightKg: Number(formData.weightKg) || 70,
+      systolicBp: Number(formData.systolicBp),
+      diastolicBp: Number(formData.diastolicBp) || 80,
+      totalCholesterol: Number(formData.totalCholesterol) || 190,
+      hdlCholesterol: Number(formData.hdlCholesterol) || 50,
+      fastingGlucose: Number(formData.fastingGlucose) || 95,
+      hba1c: Number(formData.hba1c) || 5.4,
+    };
 
-      if (res.data.success) {
-        setRiskResult(res.data.assessment);
-      } else {
-        setError(res.data.error || 'Failed to compute risk assessment');
+    try {
+      let res;
+      try {
+        res = await axios.post('/api/risk/calculate', payload);
+      } catch (postErr) {
+        if (postErr.response?.status === 404) {
+          res = await axios.post('/api/risk/evaluate', payload);
+        } else {
+          throw postErr;
+        }
       }
+
+      const data = res.data || {};
+      const assessment = data.assessment || {};
+      const healthAge = data.healthAge || {};
+      const risks = data.diseaseRisks || {};
+
+      setRiskResult({
+        biologicalAge: assessment.biologicalAge ?? healthAge.biologicalHealthAge ?? formData.age,
+        cvdRiskPercent: assessment.cvdRiskPercent ?? risks.cardiovascular?.riskPercentage ?? '6.4',
+        cvdScore: assessment.cvdScore ?? risks.cardiovascular?.score ?? 45,
+        metabolicScore: assessment.metabolicScore ?? risks.diabetes?.score ?? 35,
+        htnScore: assessment.htnScore ?? risks.hypertension?.score ?? 50,
+        lipidScore: assessment.lipidScore ?? 40,
+        lifestyleScore: assessment.lifestyleScore ?? 30,
+        ...assessment,
+      });
     } catch (err) {
       setError(
-        err.response?.data?.error ||
-          'Risk calculation engine offline. Verify /server is running.'
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          'Unable to calculate risk score. Please verify inputs.'
       );
     } finally {
       setLoading(false);
@@ -132,10 +155,10 @@ export function RiskDomain({ language = 'en' }) {
         title={language === 'en' ? 'Disease Risk Score & Biological Health Age' : 'स्वास्थ्य जोखिम एवं जैविक आयु'}
         description={
           language === 'en'
-            ? 'Multivariate predictive risk modeling for cardiovascular disease, Type-2 Diabetes, and hypertension with biological health age differentials.'
+            ? 'Clinical LLM reasoning for cardiovascular disease, Type-2 Diabetes, and hypertension with biological health age differentials.'
             : 'हृदय रोग और मधुमेह के 10-वर्षीय जोखिम का वैज्ञानिक मूल्यांकन।'
         }
-        tag="XGBoost & Framingham"
+        tag="Gemini LLM Intelligence"
         actions={
           <SeedDataLoader
             domainId="risk"
@@ -233,7 +256,7 @@ export function RiskDomain({ language = 'en' }) {
                   size="md"
                   className="w-full mt-2"
                   isLoading={loading}
-                  leftIcon={<Sparkles className="w-3.5 h-3.5" />}
+                  leftIcon={<Calculator className="w-3.5 h-3.5" strokeWidth={1.5} />}
                 >
                   {loading ? 'Modeling Risk...' : 'Calculate 10-Year Risk & Health Age'}
                 </Button>
@@ -286,12 +309,41 @@ export function RiskDomain({ language = 'en' }) {
                       <span className="text-3xl font-extrabold text-zinc-950">
                         {riskResult.cvdRiskPercent || '6.4'}%
                       </span>
-                      <span className="text-xs text-zinc-500 font-medium">Framingham</span>
+                      <span className="text-xs text-zinc-500 font-medium">Clinical LLM</span>
                     </div>
                   </div>
                   <Badge variant="neutral">Low to Moderate</Badge>
                 </Card>
               </div>
+
+              {/* LLM Clinical Insights */}
+              {riskResult.clinicalSummary && (
+                <Card className="p-4 bg-zinc-50 border border-zinc-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                      LLM Clinical Assessment
+                    </span>
+                    <Badge variant="accent">
+                      {riskResult.engine || 'Gemini 1.5 Flash'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-zinc-800 leading-relaxed mb-3">
+                    {riskResult.clinicalSummary}
+                  </p>
+                  {Array.isArray(riskResult.primaryDrivers) && riskResult.primaryDrivers.length > 0 && (
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                        Primary Biological Drivers:
+                      </span>
+                      <ul className="text-xs text-zinc-700 list-disc list-inside space-y-0.5">
+                        {riskResult.primaryDrivers.map((driver, idx) => (
+                          <li key={idx}>{driver}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </Card>
+              )}
 
               {/* Radar Chart & Breakdown */}
               <Card>

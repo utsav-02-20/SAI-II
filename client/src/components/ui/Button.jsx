@@ -8,7 +8,9 @@ import { cn } from '../../utils/cn';
  */
 
 /**
- * Modern ultra-minimalist button primitive.
+ * Disciplined clinical button primitive.
+ * Zero glowing gradients, crisp hairline borders, sharp geometry.
+ * 
  * @param {React.ButtonHTMLAttributes<HTMLButtonElement> & {
  *   variant?: ButtonVariant;
  *   size?: ButtonSize;
@@ -36,22 +38,22 @@ export const Button = React.forwardRef(function Button(
     primary:
       'bg-zinc-900 text-white hover:bg-zinc-800 active:bg-zinc-950 disabled:bg-zinc-200 disabled:text-zinc-400',
     secondary:
-      'bg-zinc-100 text-zinc-900 hover:bg-zinc-200/80 active:bg-zinc-200 disabled:bg-zinc-50 disabled:text-zinc-300',
+      'bg-zinc-100 text-zinc-900 hover:bg-zinc-200 active:bg-zinc-300 disabled:bg-zinc-50 disabled:text-zinc-300',
     outline:
-      'border border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50 hover:border-zinc-300 active:bg-zinc-100 shadow-xs disabled:border-zinc-100 disabled:text-zinc-300',
+      'border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50 active:bg-zinc-100 disabled:border-zinc-200 disabled:text-zinc-300',
     ghost:
-      'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/70 active:bg-zinc-200 disabled:text-zinc-300',
+      'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 disabled:text-zinc-300',
     accent:
-      'bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-xs disabled:bg-emerald-200',
+      'bg-zinc-900 text-white hover:bg-zinc-800 active:bg-zinc-950 disabled:bg-zinc-300',
     danger:
-      'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-xs disabled:bg-red-200',
+      'bg-[#DC2626] text-white hover:bg-[#B91C1C] active:bg-[#991B1B] disabled:bg-red-200',
   };
 
   const sizeStyles = {
-    xs: 'h-7 px-2.5 text-xs rounded-md gap-1.5',
-    sm: 'h-8 px-3 text-xs font-medium rounded-lg gap-1.5',
-    md: 'h-9 px-3.5 text-xs sm:text-sm font-medium rounded-lg gap-2',
-    lg: 'h-10 px-4 text-sm font-medium rounded-lg gap-2',
+    xs: 'h-6 px-2 text-xs rounded-sm gap-1',
+    sm: 'h-7 px-2.5 text-xs font-medium rounded-sm gap-1.5',
+    md: 'h-8 px-3 text-xs sm:text-sm font-medium rounded-sm gap-1.5',
+    lg: 'h-9 px-4 text-sm font-medium rounded-sm gap-2',
   };
 
   return (
@@ -60,7 +62,7 @@ export const Button = React.forwardRef(function Button(
       type={type}
       disabled={disabled || isLoading}
       className={cn(
-        'inline-flex items-center justify-center select-none font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-1 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center select-none font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed',
         variantStyles[variant] || variantStyles.primary,
         sizeStyles[size] || sizeStyles.md,
         className

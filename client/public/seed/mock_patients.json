@@ -1,0 +1,66 @@
+[
+  {
+    "email": "aarav.sharma@example.com",
+    "passwordHash": "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekd59g0xW.V8HlQf2",
+    "phone": "+919876543210",
+    "role": "PATIENT",
+    "profile": {
+      "firstName": "Aarav",
+      "lastName": "Sharma",
+      "dateOfBirth": "1994-06-15T00:00:00.000Z",
+      "gender": "MALE",
+      "bloodGroup": "B+",
+      "heightCm": 175.5,
+      "weightKg": 78.0,
+      "allergies": ["Penicillin", "Sulfa drugs"],
+      "chronicConditions": ["Hypertension"],
+      "familyHistory": [
+        {
+          "relation": "Father",
+          "disease": "Type 2 Diabetes"
+        },
+        {
+          "relation": "Maternal Grandfather",
+          "disease": "Coronary Artery Disease"
+        }
+      ],
+      "emergencyContacts": [
+        {
+          "name": "Priya Sharma",
+          "relationship": "Spouse",
+          "phoneNumber": "+919876543211"
+        }
+      ]
+    }
+  },
+  {
+    "email": "ananya.patel@example.com",
+    "passwordHash": "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekd59g0xW.V8HlQf2",
+    "phone": "+919876543212",
+    "role": "PATIENT",
+    "profile": {
+      "firstName": "Ananya",
+      "lastName": "Patel",
+      "dateOfBirth": "1998-11-22T00:00:00.000Z",
+      "gender": "FEMALE",
+      "bloodGroup": "O+",
+      "heightCm": 162.0,
+      "weightKg": 56.5,
+      "allergies": ["Aspirin", "NSAIDs"],
+      "chronicConditions": ["Asthma"],
+      "familyHistory": [
+        {
+          "relation": "Mother",
+          "disease": "Hypothyroidism"
+        }
+      ],
+      "emergencyContacts": [
+        {
+          "name": "Rajesh Patel",
+          "relationship": "Father",
+          "phoneNumber": "+919876543213"
+        }
+      ]
+    }
+  }
+]

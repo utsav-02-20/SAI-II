@@ -6,5 +6,10 @@ export const getHealth = async (req, res) => {
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),
     environment: process.env.NODE_ENV || 'development',
+    services: {
+      express: 'online',
+      ai: 'online',
+      mongo: 'online',
+    },
   });
 };

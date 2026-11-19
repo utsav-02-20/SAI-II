@@ -65,7 +65,7 @@ export const DOMAINS = [
     route: '/features/risk',
     label: 'Risk & Health Age',
     labelHi: 'स्वास्थ्य जोखिम विश्लेषण',
-    tag: 'Predictive ML',
+    tag: 'Gemini LLM',
     icon: Activity,
     description: 'Biological age scoring and 10-year risk assessment for chronic cardiovascular and metabolic conditions.',
     serviceEndpoint: '/api/risk/calculate',
@@ -98,4 +98,4 @@ export const DOMAINS = [
   },
 ];
 
-export const DEFAULT_DOMAIN_ID = 'triage';
+export const DEFAULT_DOMAIN_ID = 'home';

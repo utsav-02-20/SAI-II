@@ -16,7 +16,7 @@ export const Input = React.forwardRef(function Input(
   return (
     <div className="relative w-full">
       {leftIcon && (
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+        <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-zinc-400">
           {leftIcon}
         </div>
       )}
@@ -25,12 +25,12 @@ export const Input = React.forwardRef(function Input(
         type={type}
         disabled={disabled}
         className={cn(
-          'w-full h-9 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors duration-150',
+          'w-full h-8 sm:h-8.5 rounded-sm border border-zinc-300 bg-white px-2.5 py-1 text-xs text-zinc-900 placeholder:text-zinc-400 transition-colors duration-150',
           'focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950',
           'disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400',
-          leftIcon && 'pl-9',
-          rightElement && 'pr-10',
-          error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500',
+          leftIcon && 'pl-8',
+          rightElement && 'pr-9',
+          error && 'border-red-600 focus:border-red-600 focus:ring-red-600',
           className
         )}
         {...props}
@@ -41,7 +41,7 @@ export const Input = React.forwardRef(function Input(
         </div>
       )}
       {error && (
-        <p className="mt-1 text-[11px] text-rose-600 font-medium">{error}</p>
+        <p className="mt-1 font-mono text-[11px] text-red-600 font-medium">{error}</p>
       )}
     </div>
   );

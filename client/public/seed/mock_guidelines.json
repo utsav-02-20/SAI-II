@@ -1,0 +1,30 @@
+[
+  {
+    "topic": "WHO Malaria Guidelines",
+    "organization": "World Health Organization",
+    "firstLineTreatment": "Artemisinin-based combination therapy (ACT)",
+    "url": "https://www.who.int/publications/i/item/guidelines-for-malaria"
+  },
+  {
+    "topic": "Dengue Management Protocol",
+    "organization": "WHO & NVBDCP",
+    "contraindicatedMeds": ["Aspirin", "Ibuprofen", "NSAIDs"],
+    "primaryTherapy": "Supportive isotonic fluid management",
+    "url": "https://www.who.int/news-room/fact-sheets/detail/dengue-and-severe-dengue"
+  },
+  {
+    "topic": "Debunked Myths",
+    "myths": [
+      {
+        "claim": "Papaya leaf juice cures dengue",
+        "verdict": "PARTIALLY_TRUE_WITH_CAVEATS",
+        "truth": "May support platelet count, but is not an antiviral cure and cannot replace hospital hydration."
+      },
+      {
+        "claim": "Drinking colloidal silver cures viral infections",
+        "verdict": "DANGEROUS_MYTH",
+        "truth": "Causes permanent argyria (blue skin) and kidney failure; zero clinical benefit."
+      }
+    ]
+  }
+]

@@ -8,6 +8,7 @@ import {
 const router = Router();
 
 router.post('/evaluate', evaluateFullRisk);
+router.post('/calculate', evaluateFullRisk);
 router.post('/health-age', calculateHealthAgeOnly);
 router.post('/prevention-plan', generatePreventionPlanOnly);
 

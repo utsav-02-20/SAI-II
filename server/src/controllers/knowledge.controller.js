@@ -15,6 +15,7 @@ export const askMedicalRAG = async (req, res) => {
     const answerData = queryClinicalRAG(query);
     return res.status(200).json({
       success: true,
+      answer: answerData,
       data: answerData,
     });
   } catch (error) {
@@ -39,6 +40,7 @@ export const checkMisinformation = async (req, res) => {
     const verdictData = checkMedicalMyth(claim);
     return res.status(200).json({
       success: true,
+      verification: verdictData,
       data: verdictData,
     });
   } catch (error) {
@@ -61,7 +63,11 @@ export const detectDeficiency = async (req, res) => {
     }
 
     const result = detectNutritionalDeficiency(symptoms);
-    return res.status(200).json(result);
+    return res.status(200).json({
+      success: true,
+      analysis: result,
+      ...result,
+    });
   } catch (error) {
     console.error('[Detect Deficiency Error]', error);
     return res.status(500).json({

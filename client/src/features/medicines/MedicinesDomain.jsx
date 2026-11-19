@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   Plus,
   Trash2,
-  Sparkles,
+  ShieldCheck,
   Utensils,
   BookOpen,
 } from 'lucide-react';
@@ -209,7 +209,7 @@ export function MedicinesDomain({ user, language = 'en' }) {
                 disabled={medicines.length === 0}
                 isLoading={loading}
                 onClick={handleAnalyzeSafety}
-                leftIcon={<Sparkles className="w-3.5 h-3.5" />}
+                leftIcon={<ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />}
               >
                 {loading ? 'Evaluating Safety...' : 'Run Interaction & Safety Check'}
               </Button>

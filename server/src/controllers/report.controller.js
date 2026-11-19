@@ -102,6 +102,7 @@ export const analyzeReport = async (req, res) => {
       success: true,
       reportId: savedReport.id,
       analysis,
+      report: analysis,
       verifiedSource: 'Pathology Reference Standards & LOINC Clinical Directory',
     });
   } catch (error) {

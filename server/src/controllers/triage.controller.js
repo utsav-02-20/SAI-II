@@ -4,10 +4,15 @@ import {
   analyzeSymptomImage,
 } from '../services/triage.service.js';
 
+const activeTriageSessions = new Map();
+
 export const startTriage = async (req, res) => {
   try {
     const { chiefComplaint = 'fever', language = 'en' } = req.body;
     const session = startTriageSession(chiefComplaint);
+    if (session.sessionId) {
+      activeTriageSessions.set(session.sessionId, session);
+    }
 
     return res.status(200).json({
       success: true,
@@ -24,24 +29,42 @@ export const startTriage = async (req, res) => {
 
 export const nextTriageQuestion = async (req, res) => {
   try {
-    const { treeKey, currentQuestionIndex, answer, history } = req.body;
+    let { treeKey, currentQuestionIndex, answer, history, sessionId } = req.body;
 
-    if (!treeKey || currentQuestionIndex === undefined || !answer) {
-      return res.status(400).json({
-        success: false,
-        error: { message: 'treeKey, currentQuestionIndex, and answer are required.' },
-      });
+    // Retrieve from session cache if sessionId is passed
+    if (sessionId && activeTriageSessions.has(sessionId)) {
+      const cached = activeTriageSessions.get(sessionId);
+      treeKey = treeKey || cached.treeKey;
+      currentQuestionIndex =
+        currentQuestionIndex !== undefined ? currentQuestionIndex : cached.currentQuestionIndex;
+      history = history || cached.history || [];
     }
+
+    treeKey = treeKey || 'fever';
+    currentQuestionIndex = currentQuestionIndex !== undefined ? parseInt(currentQuestionIndex, 10) : 0;
+    answer = answer || 'Yes';
 
     const result = progressTriageSession({
       treeKey,
-      currentQuestionIndex: parseInt(currentQuestionIndex, 10),
+      currentQuestionIndex,
       answer,
       history: history || [],
     });
 
+    if (sessionId && activeTriageSessions.has(sessionId)) {
+      activeTriageSessions.set(sessionId, {
+        ...activeTriageSessions.get(sessionId),
+        ...result,
+      });
+    }
+
     return res.status(200).json({
       success: true,
+      session: {
+        id: sessionId,
+        sessionId,
+        ...result,
+      },
       ...result,
     });
   } catch (error) {
@@ -55,8 +78,8 @@ export const nextTriageQuestion = async (req, res) => {
 
 export const analyzeImage = async (req, res) => {
   try {
-    const { imageType, description } = req.body;
-    let inferredType = imageType || 'skin_rash';
+    const { imageType, type, description } = req.body;
+    let inferredType = type || imageType || 'skin_rash';
 
     if (req.file) {
       const fileName = (req.file.originalname || '').toLowerCase();
